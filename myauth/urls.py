@@ -11,6 +11,6 @@ urlpatterns = [
         {'template_name': 'myauth/signin.html'},
         name='sign_in'),
     url(r'^sign-out/$', auth_views.logout,
-        {'next_page': '/'},
+        {'next_page': '/jumprhythm/'},
         name='sign_out'),
 ]
