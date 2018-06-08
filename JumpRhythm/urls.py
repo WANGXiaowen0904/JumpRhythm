@@ -17,6 +17,6 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path('jumprhythm/', include('myaccount.urls')),
+    path('jumprhythm/', include('myauth.urls')),
     path('admin/', admin.site.urls),
 ]
