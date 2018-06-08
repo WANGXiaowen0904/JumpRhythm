@@ -13,4 +13,5 @@ urlpatterns = [
     url(r'^sign-out/$', auth_views.logout,
         {'next_page': '/jumprhythm/'},
         name='sign_out'),
+    url(r'sign-up/$', views.sign_up, name='sign_up'),
 ]
