@@ -10,9 +10,13 @@
     <link rel="stylesheet" href="{% static 'css/theme.css' %}">
 </head>
 <body>
-    <div class="sign">
-{% block content %}
-{% endblock %}
+<div class="sign">
+    {% block content %}
+    {% endblock %}
+    <div class="jump">
+        {% block jump %}
+        {% endblock %}
     </div>
+</div>
 </body>
 </html>

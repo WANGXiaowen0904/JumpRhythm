@@ -103,6 +103,21 @@
     text-align: center;
 }
 
+.jump p {
+    padding: 10px 20px;
+    text-align: center;
+    border: 1px solid #d8dee2;
+    border-radius: 4px;
+    color: #ffffff;
+    font-size: 12px;
+    transform: translateY(10px);
+}
+
+.jump a {
+    color: #0366d6;
+    text-decoration: none;
+}
+
 input {
     width: 100%;
     margin-bottom: 10px;
