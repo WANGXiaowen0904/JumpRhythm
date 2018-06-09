@@ -1,0 +1,29 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Jump Rhythm | Home</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Jump Rhythm</title>
+    <link rel="stylesheet" href={% static 'css/style.css' %} media="screen">
+</head>
+<body>
+<audio id="chord1" src={% static 'audio/1.mp3' %} preload="auto"></audio>
+<audio id="chord2" src={% static 'audio/2.mp3' %} preload="auto"></audio>
+<audio id="chord3" src={% static 'audio/3.mp3' %} preload="auto"></audio>
+<audio id="chord4" src={% static 'audio/4.mp3' %} preload="auto"></audio>
+<audio id="chord5" src={% static 'audio/5.mp3' %} preload="auto"></audio>
+<audio id="chord6" src={% static 'audio/6.mp3' %} preload="auto"></audio>
+<audio id="chord7" src={% static 'audio/7.mp3' %} preload="auto"></audio>
+<audio id="chord8" src={% static 'audio/8.mp3' %} preload="auto"></audio>
+<audio id="chord9" src={% static 'audio/9.mp3' %} preload="auto"></audio>
+<audio id="chord10" src={% static 'audio/10.mp3' %} preload="auto"></audio>
+<canvas id="world" width="900" height="600" style="position: absolute; left: 270px; top: 52px;">
+    <p class="noCanvas">
+        You need a chrome to view this.
+    </p>
+</canvas>
+<script src={% static 'js/jump.js' %}></script>
+</body>
+</html>

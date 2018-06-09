@@ -15,12 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from django.conf.urls import url
-
-from myauth.views import index
 
 urlpatterns = [
-    url(r'^$', index),
-    path('jumprhythm/', include('myauth.urls')),
+    path('', include('rhythm.urls')),
+    path('auth/', include('myauth.urls')),
     path('admin/', admin.site.urls),
 ]

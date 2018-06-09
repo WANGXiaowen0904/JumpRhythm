@@ -188,3 +188,7 @@ Temporary Items
 
 # References
 refs/
+
+# res
+*.mp3
+*.mp4

@@ -7,12 +7,8 @@ from django.shortcuts import render, redirect
 from myauth.forms import SignUpForm
 
 
-def index(request):
-    return HttpResponse("Hello world!")
-
-
 def sign_in(request):
-    return HttpResponse("This is a login page.")
+    return render(request, 'myauth/signin.html')
 
 
 def sign_up(request):

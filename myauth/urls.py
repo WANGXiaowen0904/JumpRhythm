@@ -6,7 +6,6 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.index, name='home'),
     url(r'^sign-in/$', auth_views.login,
         {'template_name': 'myauth/signin.html'},
         name='sign_in'),
