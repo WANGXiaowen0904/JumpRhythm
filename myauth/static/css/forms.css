@@ -91,16 +91,12 @@
     display: block;
 }
 
-.sign-in {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin: -150px 0 0 -150px;
-    width: 300px;
-    height: 300px;
+.sign {
+    width: 350px;
+    margin: 36px auto auto;
 }
 
-.sign-in h1 {
+.sign h1 {
     color: #fff;
     text-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
     letter-spacing: 1px;
@@ -111,7 +107,6 @@ input {
     width: 100%;
     margin-bottom: 10px;
     background: rgba(0, 0, 0, 0.3);
-    border: none;
     outline: none;
     padding: 10px;
     font-size: 13px;
@@ -125,6 +120,7 @@ input {
     -o-transition: box-shadow .5s ease;
     -ms-transition: box-shadow .5s ease;
     transition: box-shadow .5s ease;
+    transform: translateY(10px);
 }
 
 input:focus {
