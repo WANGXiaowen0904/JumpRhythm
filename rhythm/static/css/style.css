@@ -147,11 +147,11 @@ p.noCanvas {
 }
 
 #wrapper.toggled {
-    padding-left: 220px;
+    padding-left: 240px;
 }
 
 #wrapper.toggled #sidebar-wrapper {
-    width: 220px;
+    width: 240px;
 }
 
 #wrapper.toggled #page-content-wrapper {
@@ -165,8 +165,8 @@ p.noCanvas {
     -webkit-transition: all 0.5s ease;
     background: #1a1a1a;
     height: 100%;
-    left: 220px;
-    margin-left: -220px;
+    left: 240px;
+    margin-left: -240px;
     overflow-x: hidden;
     overflow-y: auto;
     transition: all 0.5s ease;
@@ -197,7 +197,7 @@ p.noCanvas {
     padding: 0;
     position: absolute;
     top: 0;
-    width: 220px;
+    width: 100%;
 }
 
 .sidebar-nav li {
@@ -224,38 +224,6 @@ p.noCanvas {
     color: #ffffff;
 }
 
-.sidebar-nav li:nth-child(2):before {
-    background-color: #402d5c;
-}
-
-.sidebar-nav li:nth-child(3):before {
-    background-color: #4c366d;
-}
-
-.sidebar-nav li:nth-child(4):before {
-    background-color: #583e7e;
-}
-
-.sidebar-nav li:nth-child(5):before {
-    background-color: #64468f;
-}
-
-.sidebar-nav li:nth-child(6):before {
-    background-color: #704fa0;
-}
-
-.sidebar-nav li:nth-child(7):before {
-    background-color: #7c5aae;
-}
-
-.sidebar-nav li:nth-child(8):before {
-    background-color: #8a6cb6;
-}
-
-.sidebar-nav li:nth-child(9):before {
-    background-color: #987dbf;
-}
-
 .sidebar-nav li:hover:before {
     transition: width 0.2s ease-in;
     width: 100%;
@@ -264,23 +232,12 @@ p.noCanvas {
 .sidebar-nav li a {
     color: #dddddd;
     display: block;
-    padding: 10px 15px 10px 30px;
+    padding: 10px 15px 10px;
     text-decoration: none;
 }
 
 .sidebar-nav li.open:hover before {
     transition: width 0.2s ease-in;
-    width: 100%;
-}
-
-.sidebar-nav .dropdown-menu {
-    background-color: #222222;
-    border-radius: 0;
-    border: none;
-    box-shadow: none;
-    margin: 0;
-    padding: 0;
-    position: relative;
     width: 100%;
 }
 
@@ -296,9 +253,11 @@ p.noCanvas {
 }
 
 .sidebar-nav > .sidebar-brand {
-    font-size: 20px;
+    font-size: 30px;
     height: 65px;
     line-height: 44px;
+    letter-spacing: 1px;
+    text-align: center;
 }
 
 /*-------------------------------*/
@@ -443,4 +402,32 @@ p.noCanvas {
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.4);
     z-index: 1;
+}
+
+/*for nav items*/
+.user-sign {
+    display: flex;
+    justify-content: space-around;
+}
+.user-sign > a {
+    text-align: center;
+    padding: 10px 0 !important;
+}
+.user-profile {
+    color: white;
+    font-size: small;
+    padding-left: 30px;
+    text-align: left;
+}
+
+/*.btn-group {*/
+    /*justify-content: space-around;*/
+/*}*/
+
+.mode {
+    display: flex;
+}
+.mode > button {
+    padding: 10px 0;
+    flex: 1;
 }

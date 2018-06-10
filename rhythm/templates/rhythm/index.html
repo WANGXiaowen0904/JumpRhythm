@@ -22,13 +22,6 @@
 {#<audio id="chord8" src={% static 'audio/8.mp3' %} preload="auto"></audio>#}
 {#<audio id="chord9" src={% static 'audio/9.mp3' %} preload="auto"></audio>#}
 {#<audio id="chord10" src={% static 'audio/10.mp3' %} preload="auto"></audio>#}
-{#<canvas id="world" width="900" height="600" style="position: absolute; left: 270px; top: 52px;">#}
-{#    <p class="noCanvas">#}
-{#        You need a chrome to view this.#}
-{#    </p>#}
-{#</canvas>#}
-{#<script src={% static 'js/jump.js' %}></script>#}
-
 <!-- wrapper -->
 <div id="wrapper">
     <div class="overlay"></div>
@@ -41,19 +34,34 @@
                 </a>
             </li>
             <li class="sidebar-header">
-                <div class="user-info">
-                    <div class="user-name">John</div>
-                    <div class="user-name">John</div>
-                    <div class="user-status">
-                        <a href="#"><span class="label label-success">Online</span></a>
+                {% if request.user.is_authenticated %}
+                    <div class="user-info">
+                        <div class="user-profile">{{ request.user.username }}</div>
+                        <div class="user-profile">{{ request.user.email }}</div>
+                        <a href="{% url "sign_out" %}">
+                            <span class="label label-danger">sign out</span>
+                        </a>
                     </div>
+                {% else %}
+                    <div class="user-sign">
+                        <a href="{% url "sign_in" %}">sign in</a>
+                        <a href="{% url "sign_up" %}">sign up</a>
+                    </div>
+                {% endif %}
+            </li>
+            <li>
+                <div class="btn-group mode" role="group" aria-label="...">
+                    <button type="button" class="btn btn-default">Create</button>
+                    <button type="button" class="btn btn-default">Recognize</button>
+                    <button type="button" class="btn btn-default">Challenge</button>
                 </div>
             </li>
             <li>
-                <a href="#"><i class="fa fa-fw fa-home"></i> Home</a>
-            </li>
-            <li>
-                <a href="#"><i class="fa fa-fw fa-folder"></i> Page one</a>
+                <div class="list-group">
+                    <a href="#" class="list-group-item">
+                        <p class="list-group-item-text">...</p>
+                    </a>
+                </div>
             </li>
         </ul>
     </nav>

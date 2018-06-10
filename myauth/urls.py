@@ -10,7 +10,7 @@ urlpatterns = [
         {'template_name': 'myauth/signin.html'},
         name='sign_in'),
     url(r'^sign-out/$', auth_views.logout,
-        {'next_page': '/jumprhythm/'},
+        {'next_page': '/'},
         name='sign_out'),
     url(r'sign-up/$', views.sign_up, name='sign_up'),
 ]
