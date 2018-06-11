@@ -1,0 +1,15 @@
+{% extends 'rhythm/base.html' %}
+{% load staticfiles %}
+
+{% block container %}
+    <canvas id="world" width="900" height="600"
+            style="position: absolute; left: 270px; top: 52px;background: {% static "pic/background.png" %};">
+        <p class="noCanvas">
+            You need a chrome to view this.
+        </p>
+    </canvas>
+{% endblock %}
+
+{% block script %}
+<script src={% static 'js/rhythm.js' %}></script>
+{% endblock %}

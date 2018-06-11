@@ -13,7 +13,6 @@ body, html {
 }
 
 canvas {
-    /*background: url(background.png);*/
     border: 3px #153742 solid;
 }
 

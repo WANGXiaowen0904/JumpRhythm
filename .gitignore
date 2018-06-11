@@ -192,3 +192,5 @@ refs/
 # res
 *.mp3
 *.mp4
+/rhythm/static/pic/*
+/rhythm/static/audio/*
