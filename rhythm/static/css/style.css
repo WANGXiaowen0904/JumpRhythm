@@ -419,14 +419,21 @@ p.noCanvas {
     text-align: left;
 }
 
-/*.btn-group {*/
-    /*justify-content: space-around;*/
-/*}*/
-
 .mode {
     display: flex;
 }
 .mode > button {
     padding: 10px 0;
     flex: 1;
+}
+
+#world {
+    width: 810px;
+    height: 540px;
+}
+
+#under-canvas {
+    position: absolute;
+    top: 670px;
+    left: 340px;
 }

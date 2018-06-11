@@ -1,17 +1,17 @@
 var JumpRhythmWorld = new function() {
 
-	var NUMBER_OF_CHANNELS = 12;
-	var NUMBER_OF_CHORDS = 10;
+	var NUMBER_OF_CHANNELS = 0;
+	var NUMBER_OF_CHORDS = 21;
 
-	var NUMBER_OF_ROWS = 1;
-	var NUMBER_OF_COLS = 10;
+	var NUMBER_OF_ROWS = 3;
+	var NUMBER_OF_COLS = 7;
 
 	var PLAYHEAD_MIN_SPEED = 1;
 	var PLAYHEAD_MAX_SPEED = 6;
+    //
+	// var usera = navigator.userAgent.toLowerCase();
 
-	var usera = navigator.userAgent.toLowerCase();
-
-	var worldRect = { x: 0, y: 0, width: 900, height: 600 };
+	var worldRect = { x: 0, y: 0, width: 810, height: 540 };
 	var map = { x: 160, y: 0, width: 580, height: 600 };
 
 	var canvas;
@@ -24,7 +24,7 @@ var JumpRhythmWorld = new function() {
 	var playhead;
 	var playheadSpeed = 3;
 
-	// Holds references to all the preloaded chords audio objects, contents never changes after startup
+	// Holds references to all the pre-loaded chords audio objects, contents never changes after startup
 	var audioChords = [];
 
 	// Holds the audio instances used to play back audio, objects in this pool are rotated

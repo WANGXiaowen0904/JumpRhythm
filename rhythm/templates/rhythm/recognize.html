@@ -1,0 +1,30 @@
+{% extends 'rhythm/base.html' %}
+
+{% block audios %}
+    <div>
+
+    </div>
+{% endblock %}
+
+{% block container %}
+    <canvas id="world">
+        <p class="noCanvas">
+            You need a chrome to view this.
+        </p>
+    </canvas>
+    <div id="under-canvas" class="mode">
+        <a href="#">
+            <button class="btn btn-primary" type="button">Upload</button>
+        </a>
+        <a href="#">
+            <button class="btn btn-primary" type="button">Placeholder</button>
+        </a>
+        <a href="#">
+            <button class="btn btn-primary" type="button">Placeholder</button>
+        </a>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{{ STATIC_URL }}js/rhythm.js"></script>
+{% endblock %}

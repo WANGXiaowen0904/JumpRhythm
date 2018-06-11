@@ -1,4 +1,3 @@
-from django.http import HttpResponse
 from django.shortcuts import render
 
 
@@ -8,4 +7,9 @@ def index(request):
 
 
 def create(request):
-    return render(request, 'rhythm/create.html')
+    range_list = [i for i in range(1, 22)]
+    return render(request, 'rhythm/create.html', {'range_list': range_list})
+
+
+def recogize(request):
+    return render(request, 'rhythm/recognize.html')

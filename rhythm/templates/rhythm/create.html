@@ -1,15 +1,23 @@
 {% extends 'rhythm/base.html' %}
 {% load staticfiles %}
 
+{% block audios %}
+    {% for i in range_list %}
+        <audio id="chord{{ i }}" src="{{ STATIC_URL }}audio/{{ i }}.mp3" preload="auto"></audio>
+    {% endfor %}
+{% endblock %}
+
 {% block container %}
-    <canvas id="world" width="900" height="600"
-            style="position: absolute; left: 270px; top: 52px;background: {% static "pic/background.png" %};">
+    <canvas id="world">
         <p class="noCanvas">
             You need a chrome to view this.
         </p>
     </canvas>
+    <a href="{% url 'create' %}">
+        <button class="btn btn-primary" id="under-canvas" type="button">Reset</button>
+    </a>
 {% endblock %}
 
 {% block script %}
-<script src={% static 'js/rhythm.js' %}></script>
+    <script src="{{ STATIC_URL }}js/rhythm.js"></script>
 {% endblock %}
