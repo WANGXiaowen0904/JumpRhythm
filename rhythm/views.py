@@ -1,5 +1,7 @@
 from django.shortcuts import render
 
+from .models import Fragment
+
 
 # Create your views here.
 def index(request):
@@ -11,5 +13,11 @@ def create(request):
     return render(request, 'rhythm/create.html', {'range_list': range_list})
 
 
-def recogize(request):
+def recognize(request):
+    if request.method == 'POST':
+        audio = request.FILES['audio']
+        if request.user.is_authenticated:
+            fragment = Fragment(request.user, audio)
+            fragment.save()
+        return render(request, 'rhythm/recognize.html', {'audio': audio})
     return render(request, 'rhythm/recognize.html')

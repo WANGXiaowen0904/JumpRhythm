@@ -13,8 +13,9 @@
         </p>
     </canvas>
     <div id="under-canvas" class="mode">
-        <a href="#">
-            <button class="btn btn-primary" type="button">Upload</button>
+        <input type="file" id="btn_file" style="display: none;">
+        <a>
+            <button class="btn btn-primary" type="button" onclick="AutoOpenDialog()">Upload</button>
         </a>
         <a href="#">
             <button class="btn btn-primary" type="button">Placeholder</button>
@@ -26,5 +27,10 @@
 {% endblock %}
 
 {% block script %}
+    <script type="text/javascript">
+    function AutoOpenDialog() {
+        document.getElementById("btn_file").click();
+    }
+    </script>
     <script src="{{ STATIC_URL }}js/rhythm.js"></script>
 {% endblock %}

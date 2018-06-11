@@ -194,3 +194,5 @@ refs/
 *.mp4
 /rhythm/static/pic/*
 /rhythm/static/audio/*
+
+media/*
