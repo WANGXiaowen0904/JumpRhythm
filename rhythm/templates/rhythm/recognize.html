@@ -12,8 +12,12 @@
             You need a chrome to view this.
         </p>
     </canvas>
+    <form style="display: none" enctype="multipart/form-data" action="{% url 'recognize' %}" method="post">
+        {% csrf_token %}
+        <input type="file" id="file-input" name="audio" accept="audio/*" onchange="AutoUploadFile()">
+        <input type="submit" id="file-submit">
+    </form>
     <div id="under-canvas" class="mode">
-        <input type="file" id="btn_file" style="display: none;">
         <a>
             <button class="btn btn-primary" type="button" onclick="AutoOpenDialog()">Upload</button>
         </a>
@@ -28,9 +32,12 @@
 
 {% block script %}
     <script type="text/javascript">
-    function AutoOpenDialog() {
-        document.getElementById("btn_file").click();
-    }
+        function AutoOpenDialog() {
+            $("#file-input").click();
+        }
+        function AutoUploadFile() {
+            $("#file-submit").click();
+        }
     </script>
     <script src="{{ STATIC_URL }}js/rhythm.js"></script>
 {% endblock %}

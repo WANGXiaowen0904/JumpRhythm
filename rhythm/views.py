@@ -17,7 +17,7 @@ def recognize(request):
     if request.method == 'POST':
         audio = request.FILES['audio']
         if request.user.is_authenticated:
-            fragment = Fragment(request.user, audio)
+            fragment = Fragment(user=request.user, upload=audio)
             fragment.save()
         return render(request, 'rhythm/recognize.html', {'audio': audio})
     return render(request, 'rhythm/recognize.html')
