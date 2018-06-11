@@ -44,8 +44,8 @@
             </li>
             <li>
                 <div class="btn-group mode" role="group" aria-label="...">
-                    <button type="button" href="{% url 'create' %}" class="btn btn-default">Create</button>
-                    <button type="button" href="{% url 'recognize' %}" class="btn btn-default">Recognize</button>
+                    <button type="button" class="btn btn-default" onclick="JumpToCreatePage()">Create</button>
+                    <button type="button" class="btn btn-default" onclick="JumpToRecognizePage()">Recognize</button>
                     <button type="button" class="btn btn-default">Challenge</button>
                 </div>
             </li>
@@ -107,6 +107,14 @@
             $('#wrapper').toggleClass('toggled');
         });
     });
+</script>
+<script>
+    function JumpToCreatePage() {
+        window.location = {% url 'create' %};
+    }
+    function JumpToRecognizePage() {
+        window.location = {% url 'recognize' %};
+    }
 </script>
 {% block script %}
 {% endblock %}
