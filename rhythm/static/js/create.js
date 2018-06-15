@@ -59,6 +59,8 @@ let CreateMode = new function () {
             document.addEventListener('mousedown', dragPoint, false);
             document.addEventListener('mouseup', putPoint, false);
             worldCanvas.addEventListener('dblclick', drawPoints, false);
+            // Keyboard Event
+            $(document).keydown(updateSpeedLevel);
             // Button onclick listener
             $('#reset-btn').click(resetWorld);
             $('#pause-btn').click(pauseHandler);
@@ -137,6 +139,14 @@ let CreateMode = new function () {
         updateHashRecord();
         paused = false;
         $('#pause-btn').html(PAUSE_TEXT);
+    }
+
+    function updateSpeedLevel(e) {
+        if (e.keyCode === 38) { // up
+            bulletSpeedLevel = Math.min(bulletSpeedLevel + 1, SPEED_LEVEL_MAX);
+        } else if (e.keyCode === 40) { // down
+            bulletSpeedLevel = Math.max(bulletSpeedLevel - 1, SPEED_LEVEL_MIN);
+        }
     }
 
     function pauseHandler() {
@@ -317,7 +327,6 @@ let CreateMode = new function () {
                 target.emit(points[bullet.index].coordinate);
                 let cellId = getCellIdFromCoordinate(target.cloneCoordinate());
                 playChord(cellId);
-                console.log(new Date().getSeconds());
             }
 
             color = generateColor(bullet.color, 1);
