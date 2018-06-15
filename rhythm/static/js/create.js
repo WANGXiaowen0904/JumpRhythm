@@ -1,3 +1,9 @@
+let Util = new function () {
+    this.random = function (a, b) {
+        return Math.random() * (b - a) + a;
+    }
+};
+
 let CreateMode = new function () {
 
     const N_ROWS = 3;
@@ -94,6 +100,36 @@ let CreateMode = new function () {
         for (i = 0, iLen = points.length; i < iLen; ++i) {
             point = points[i];
 
+            if (point.particles.length > 0) {
+                let j, jLen, particle;
+                for (j = 0, jLen = point.particles.length; j < jLen; ++j) {
+                    if (Math.random() > 0.4) {
+                        particle = point.particles[j];
+
+                        particle.coordinate.x += particle.velocity.x;
+                        particle.coordinate.y += particle.velocity.y;
+                        particle.velocity.x *= 0.97;
+                        particle.velocity.y *= 0.97;
+                        particle.rotation += particle.velocity.r;
+
+                        let x = particle.coordinate.x + Math.cos(particle.rotation) * particle.rotationRadius;
+                        let y = particle.coordinate.y + Math.sin(particle.rotation) * particle.rotationRadius;
+
+                        context.beginPath();
+                        context.fillStyle = generateColor(point.color, Util.random(0.3, 1));
+                        context.arc(x, y, Math.max(point.scale, 0.5), 0, Math.PI * 2, true);
+                        context.fill();
+                    }
+                }
+                if (Math.random() > 0.8) {
+                    point.particles.shift();
+                }
+                while (point.particles.length > 50) {
+                    point.particles.shift();
+                }
+            }
+
+
             point.scale = Math.max(Math.min(point.coordinate.y / WORLD_RECT.height, 1), 0.2);
 
             color = context.createRadialGradient(
@@ -147,7 +183,7 @@ let CreateMode = new function () {
                 if (bullet.index > points.length - 1) {
                     bullet.index = 0;
                 }
-
+                target.emit(points[bullet.index].coordinate);
                 let cellId = getCellIdFromCoordinate(target.cloneCoordinate());
                 console.log(cellId);
                 playChord(cellId);
@@ -244,11 +280,42 @@ function Point() {
 }
 
 Point.prototype = new Dot();
+Point.prototype.emit = function (direction) {
+    this.size.current = 12;
+    this.cloudSize.current = 100;
+
+    let quantity = Util.random(20, 40);
+    let particle;
+    let factor = 0.8;
+    let dx = direction.x - this.cloneCoordinate().x;
+    let dy = direction.y - this.cloneCoordinate().y;
+    for (let i = 0; i < quantity; ++i) {
+        particle = new Particle();
+
+        particle.coordinate = this.cloneCoordinate();
+
+        particle.coordinate.x += dx * (i / quantity) * factor;
+        particle.coordinate.y += dy * (i / quantity) * factor;
+
+        let rr = (dx + dy) / 600 * (i / quantity);
+        particle.coordinate.x += rr * Util.random(-1, 1);
+        particle.coordinate.y += rr * Util.random(-1, 1);
+
+        particle.velocity.x = dx / Util.random(100, 600);
+        particle.velocity.y = dy / Util.random(100, 600);
+        particle.velocity.r = Util.random(-0.1, 0.1);
+
+        particle.rotationRadius = Util.random(0, 20);
+
+        this.particles.push(particle);
+    }
+};
 
 function Particle() {
     this.coordinate = {x: 0, y: 0};
     this.velocity = {x: 0, y: 0, r: 0};
     this.rotationRadius = 0;
+    this.rotation = 0;
 }
 
 Particle.prototype = new Dot();
