@@ -44,6 +44,9 @@ let CreateMode = new function () {
             }
             context = canvas.getContext('2d');
             // Mouse Events
+            document.addEventListener('mousemove', updateMouseCoordinate, false);
+            document.addEventListener('mousedown', dragPoint, false);
+            document.addEventListener('mouseup', putPoint, false);
             canvas.addEventListener('dblclick', drawPoints, false);
             // TODO: add keyboard event?
             // Other events
@@ -79,6 +82,19 @@ let CreateMode = new function () {
         canvas.style.top = canvasTop + 'px';
     }
 
+    function dragPoint(event) {
+        event.preventDefault();
+        mouseIsDown = true;
+        updateMouseCoordinate(event);
+        startDragging();
+    }
+
+    function putPoint(event) {
+        event.preventDefault();
+        mouseIsDown = false;
+        stopDragging();
+    }
+
     function updateMouseCoordinate(event) {
         mouseX = event.clientX - canvasLeft;
         mouseY = event.clientY - canvasTop;
@@ -91,18 +107,42 @@ let CreateMode = new function () {
         points.push(point);
     }
 
+    function startDragging() {
+        let minDistance = 1e5;
+        let currentDistance, minPos;
+        for (let i = 0; i < points.length; ++i) {
+            let point = points[i];
+            currentDistance = point.distanceTo({x: mouseX, y: mouseY});
+            if (currentDistance < minDistance && currentDistance < Math.max(point.size.current, 15)) {
+                minDistance = currentDistance;
+                minPos = i;
+            }
+        }
+        if (points[minPos]) {
+            points[minPos].dragging = true;
+        }
+    }
+
+    function stopDragging() {
+        for (let i = 0; i < points.length; ++i) {
+            if (points[i]) {
+                points[i].dragging = false;
+            }
+        }
+    }
+
     function loop() {
         context.clearRect(WORLD_RECT.x, WORLD_RECT.y, WORLD_RECT.width, WORLD_RECT.height);
 
-        let point, i, iLen, color;
+        let point, i, color;
         let deadPoints = [];
 
-        for (i = 0, iLen = points.length; i < iLen; ++i) {
+        for (i = 0; i < points.length; ++i) {
             point = points[i];
 
             if (point.particles.length > 0) {
-                let j, jLen, particle;
-                for (j = 0, jLen = point.particles.length; j < jLen; ++j) {
+                let j, particle;
+                for (j = 0; j < point.particles.length; ++j) {
                     if (Math.random() > 0.4) {
                         particle = point.particles[j];
 
@@ -147,12 +187,14 @@ let CreateMode = new function () {
             );
             context.fill();
 
-            if (false) {
-                // todo: dragging ?
+            if (point.dragging) {
+                point.coordinate.x += (mouseX - point.coordinate.x) * 0.2;
+                point.coordinate.y += (mouseY - point.coordinate.y) * 0.2;
             } else if (isOutsideWorld(point.coordinate)) {
                 deadPoints.push(i);
             }
 
+            point.cloudSize.current += (point.cloudSize.target - point.cloudSize.current) * 0.04;
             point.size.current += (point.size.target - point.size.current) * 0.2;
             updatePointColor(point);
         }
@@ -200,7 +242,7 @@ let CreateMode = new function () {
 
                 context.moveTo(middleCoordinate(cc.x, nc.x), middleCoordinate(cc.y, nc.y));
 
-                for (i = 1, iLen = bullet.coordinates.length - 1; i < iLen; ++i) {
+                for (i = 1; i < bullet.coordinates.length - 1; ++i) {
                     cc = bullet.coordinates[i];
                     nc = bullet.coordinates[i + 1];
                     context.quadraticCurveTo(
@@ -242,8 +284,10 @@ let CreateMode = new function () {
         let dy = WORLD_RECT.height / N_ROWS;
         let col = Math.floor(p.x / dx);
         let row = Math.floor(p.y / dy);
-        col = col === N_COLS ? col - 1 : col;
-        row = row === N_ROWS ? row - 1 : row;
+        col = col >= N_COLS ? col - 1 : col;
+        row = row >= N_ROWS ? row - 1 : row;
+        col = col < 0 ? 0 : col;
+        row = row < 0 ? 0 : row;
 
         return row * N_COLS + col;
     }
@@ -277,6 +321,7 @@ function Point() {
     this.scale = 0;
     this.cloudSize = {current: 50, target: 50};
     this.particles = [];
+    this.dragging = false;
 }
 
 Point.prototype = new Dot();
