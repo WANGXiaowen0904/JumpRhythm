@@ -408,10 +408,12 @@ p.noCanvas {
     display: flex;
     justify-content: space-around;
 }
+
 .user-sign > a {
     text-align: center;
     padding: 10px 0 !important;
 }
+
 .user-profile {
     color: white;
     font-size: small;
@@ -422,12 +424,13 @@ p.noCanvas {
 .mode {
     display: flex;
 }
+
 .mode > button {
     padding: 10px 0;
     flex: 1;
 }
 
-#world {
+.create > canvas {
     width: 810px;
     height: 540px;
 }

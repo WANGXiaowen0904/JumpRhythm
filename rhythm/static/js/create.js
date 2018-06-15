@@ -18,51 +18,72 @@ let CreateMode = new function () {
     };
     const PAUSE_TEXT = 'Pause';
     const CONTINUE_TEXT = 'Continue';
+    const TIME_INTERVAL = 50; // ms
+    const SPEED_LEVEL_MAX = 7;
+    const SPEED_LEVEL_MIN = 1;
 
-    let canvas;
-    let context;
+    let worldCanvas, helpCanvas;
+    let worldContext, helpContext;
     let audioChords;
     let audioChannels = [];
 
     let canvasLeft;
     let canvasTop;
     let paused = false;
+    let needHelp = true;
     let mouseIsDown = false;
     let mouseX;
     let mouseY;
 
     let points = [];
     let bullet;
-    let bulletSpeed;
+    let bulletSpeedLevel;
 
     this.init = function () {
-        canvas = document.getElementById('world');
+        worldCanvas = $('#world')[0];
+        helpCanvas = $('#help')[0];
+
         canvasLeft = (window.innerWidth - WORLD_RECT.width) * .5;
         canvasTop = (window.innerHeight - WORLD_RECT.height) * .5;
 
-        if (canvas && canvas.getContext) {
+        bulletSpeedLevel = 4;
+
+        if (worldCanvas && worldCanvas.getContext) {
             audioChords = $('audio').toArray();
             for (let i = 0; i < N_CHANNELS; ++i) {
                 audioChannels.push(new Audio(''));
             }
-            context = canvas.getContext('2d');
+            worldContext = worldCanvas.getContext('2d');
             // Mouse Events
             document.addEventListener('mousemove', updateMouseCoordinate, false);
             document.addEventListener('mousedown', dragPoint, false);
             document.addEventListener('mouseup', putPoint, false);
-            canvas.addEventListener('dblclick', drawPoints, false);
+            worldCanvas.addEventListener('dblclick', drawPoints, false);
             // Button onclick listener
             $('#reset-btn').click(resetWorld);
             $('#pause-btn').click(pauseHandler);
             // Other events
-            window.addEventListener('resize', resetCanvasAttr, false);
+            window.addEventListener('resize', resizeAllCanvas, false);
 
             bullet = new Bullet();
-            bulletSpeed = 2;
 
-            resetCanvasAttr();
+            resetCanvasAttr(worldCanvas);
 
-            setInterval(loop, 40);
+            setInterval(loop, TIME_INTERVAL);
+        }
+
+        if (helpCanvas && helpCanvas.getContext) {
+            helpContext = helpCanvas.getContext('2d');
+            resetCanvasAttr(helpCanvas);
+            $('#help-btn').click(function () {
+                needHelp = !needHelp;
+                if (needHelp) {
+                    drawHelp();
+                } else {
+                    helpContext.clearRect(0, 0, WORLD_RECT.width, WORLD_RECT.height);
+                }
+            });
+            drawHelp();
         }
     };
 
@@ -72,11 +93,14 @@ let CreateMode = new function () {
 
         updateMouseCoordinate(event);
         createPointAt(mouseX, mouseY);
+        if (points.length === 1) {
+            bullet.coordinates = [{x: mouseX, y: mouseY}];
+        }
 
         updateHashRecord();
     }
 
-    function resetCanvasAttr() {
+    function resetCanvasAttr(canvas) {
         canvas.width = WORLD_RECT.width;
         canvas.height = WORLD_RECT.height;
 
@@ -86,6 +110,11 @@ let CreateMode = new function () {
         canvas.style.position = 'absolute';
         canvas.style.left = canvasLeft + 'px';
         canvas.style.top = canvasTop + 'px';
+    }
+
+    function resizeAllCanvas(event) {
+        resetCanvasAttr(worldCanvas);
+        resetCanvasAttr(helpCanvas);
     }
 
     function dragPoint(event) {
@@ -140,9 +169,28 @@ let CreateMode = new function () {
             hash.push(h);
         }
         if (hash.length > 0) {
-            hash.push(bulletSpeed.toString());
+            hash.push(bulletSpeedLevel.toString());
         }
         history.html(hash.join('-'));
+    }
+
+    function drawHelp() {
+        helpContext.lineWidth = 3;
+        helpContext.strokeStyle = "lightgrey";
+        let dx = WORLD_RECT.width / N_COLS;
+        let dy = WORLD_RECT.height / N_ROWS;
+        for (let i = 1; i < N_ROWS; ++i) {
+            helpContext.beginPath();
+            helpContext.moveTo(0, i * dy);
+            helpContext.lineTo(helpCanvas.width, i * dy);
+            helpContext.stroke();
+        }
+        for (let j = 1; j < N_COLS; ++j) {
+            helpContext.beginPath();
+            helpContext.moveTo(j * dx, 0);
+            helpContext.lineTo(j * dx, helpCanvas.height);
+            helpContext.stroke();
+        }
     }
 
     function startDragging() {
@@ -173,7 +221,7 @@ let CreateMode = new function () {
         if (paused) {
             return;
         }
-        context.clearRect(WORLD_RECT.x, WORLD_RECT.y, WORLD_RECT.width, WORLD_RECT.height);
+        worldContext.clearRect(WORLD_RECT.x, WORLD_RECT.y, WORLD_RECT.width, WORLD_RECT.height);
 
         let point, i, color;
         let deadPoints = [];
@@ -196,10 +244,10 @@ let CreateMode = new function () {
                         let x = particle.coordinate.x + Math.cos(particle.rotation) * particle.rotationRadius;
                         let y = particle.coordinate.y + Math.sin(particle.rotation) * particle.rotationRadius;
 
-                        context.beginPath();
-                        context.fillStyle = generateColor(point.color, Util.random(0.3, 1));
-                        context.arc(x, y, Math.max(point.scale, 0.5), 0, Math.PI * 2, true);
-                        context.fill();
+                        worldContext.beginPath();
+                        worldContext.fillStyle = generateColor(point.color, Util.random(0.3, 1));
+                        worldContext.arc(x, y, Math.max(point.scale, 0.5), 0, Math.PI * 2, true);
+                        worldContext.fill();
                     }
                 }
                 if (Math.random() > 0.8) {
@@ -213,20 +261,20 @@ let CreateMode = new function () {
 
             point.scale = Math.max(Math.min(point.coordinate.y / WORLD_RECT.height, 1), 0.2);
 
-            color = context.createRadialGradient(
+            color = worldContext.createRadialGradient(
                 point.coordinate.x, point.coordinate.y, 0,
                 point.coordinate.x, point.coordinate.y, point.size.current
             );
             color.addColorStop(0, generateColor(point.color, point.color.a));
             color.addColorStop(1, generateColor(point.color, point.color.a * 0.7));
 
-            context.beginPath();
-            context.fillStyle = color;
-            context.arc(
+            worldContext.beginPath();
+            worldContext.fillStyle = color;
+            worldContext.arc(
                 point.coordinate.x, point.coordinate.y, point.size.current * point.scale,
                 0, Math.PI * 2, true
             );
-            context.fill();
+            worldContext.fill();
 
             if (point.dragging) {
                 point.coordinate.x += (mouseX - point.coordinate.x) * 0.2;
@@ -250,18 +298,18 @@ let CreateMode = new function () {
             }
 
             let target = points[bullet.index];
-
-            let bX = bullet.getCoordinate().x;
-            let bY = bullet.getCoordinate().y;
-            let tX = target.coordinate.x;
-            let tY = target.coordinate.y;
-            let dot = {x: bX, y: bY};
-            dot.x += (tX - bX) * bulletSpeed / 10;
-            dot.y += (tY - bY) * bulletSpeed / 10;
+            let dX = target.coordinate.x - bullet.getCoordinate().x;
+            let dY = target.coordinate.y - bullet.getCoordinate().y;
+            let dT = 18 - 2 * bulletSpeedLevel - bullet.past;
+            dT = dT < 1 ? 1 : dT;
+            let dot = {x: bullet.getCoordinate().x, y: bullet.getCoordinate().y};
+            dot.x += dX / dT;
+            dot.y += dY / dT;
             bullet.addCoordinate(dot);
 
             if (bullet.distanceTo(target.coordinate) < Math.min(target.size.current, 3)) {
                 bullet.index++;
+                bullet.past = 0;
                 bullet.color = target.color;
                 if (bullet.index > points.length - 1) {
                     bullet.index = 0;
@@ -269,6 +317,7 @@ let CreateMode = new function () {
                 target.emit(points[bullet.index].coordinate);
                 let cellId = getCellIdFromCoordinate(target.cloneCoordinate());
                 playChord(cellId);
+                console.log(new Date().getSeconds());
             }
 
             color = generateColor(bullet.color, 1);
@@ -276,24 +325,24 @@ let CreateMode = new function () {
             let cc = bullet.coordinates[0];
             let nc = bullet.coordinates[1];
             if (cc && nc) {
-                context.beginPath();
-                context.strokeStyle = color;
-                context.lineWidth = 2;
-
-                context.moveTo(middleCoordinate(cc.x, nc.x), middleCoordinate(cc.y, nc.y));
+                worldContext.beginPath();
+                worldContext.strokeStyle = color;
+                worldContext.lineWidth = 2;
+                worldContext.moveTo(middleCoordinate(cc.x, nc.x), middleCoordinate(cc.y, nc.y));
 
                 for (i = 1; i < bullet.coordinates.length - 1; ++i) {
                     cc = bullet.coordinates[i];
                     nc = bullet.coordinates[i + 1];
-                    context.quadraticCurveTo(
+                    worldContext.quadraticCurveTo(
                         cc.x, cc.y,
                         middleCoordinate(cc.x, nc.x), middleCoordinate(cc.y, nc.y)
                     );
                 }
-                context.stroke();
+                worldContext.stroke();
             }
 
-            context.lineTo(nc.x, nc.y);
+            worldContext.lineTo(nc.x, nc.y);
+            bullet.past += 1;
         }
 
     }
@@ -406,9 +455,8 @@ function Particle() {
 Particle.prototype = new Dot();
 
 function Bullet() {
-    this.coordinates = [
-        {x: 0, y: 0}
-    ];
+    this.coordinates = [{x: 0, y: 0}];
+    this.past = 0;
     this.index = 0;
     this.size = 2;
     this.length = 5;
