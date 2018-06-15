@@ -54,7 +54,6 @@ let CreateMode = new function () {
             // Button onclick listener
             $('#reset-btn').click(resetWorld);
             $('#pause-btn').click(pauseHandler);
-            // TODO: add keyboard event?
             // Other events
             window.addEventListener('resize', resetCanvasAttr, false);
 
@@ -246,7 +245,7 @@ let CreateMode = new function () {
         }
 
         if (points.length > 1) {
-            if (bullet.index > point.length - 1) {
+            if (bullet.index > points.length - 1) {
                 bullet.index = 0;
             }
 
