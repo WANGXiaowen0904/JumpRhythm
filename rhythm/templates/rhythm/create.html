@@ -8,16 +8,46 @@
 {% endblock %}
 
 {% block container %}
+    <div id="history" style="display: none;"></div>
+    <div id="control" style="display: none;">2</div>
     <canvas id="world">
         <p class="noCanvas">
             You need a chrome to view this.
         </p>
     </canvas>
-    <a href="{% url 'create' %}">
-        <button class="btn btn-primary" id="under-canvas" type="button">Reset</button>
-    </a>
+    <div id="under-canvas" class="mode">
+        <a>
+            <button class="btn btn-primary" type="button" onclick="clearCanvas()">Reset</button>
+        </a>
+        <a>
+            <button id="pause-btn" class="btn btn-primary" type="button" onclick="changeStatus()">Pause</button>
+        </a>
+        <a>
+            <button class="btn btn-primary" type="button">Placeholder</button>
+        </a>
+    </div>
 {% endblock %}
 
 {% block script %}
+    <script>
+        function clearCanvas() {
+            $('#control').html(0);
+        }
+        function changeStatus() {
+            let btn = $('#pause-btn');
+            let tag = $('#control');
+            if (tag.html() === '2') {
+                tag.html(1);
+                btn.html('Continue');
+                console.log('change to continue');
+                console.log(tag.html())
+            } else if (tag.html() === '1') {
+                tag.html(2);
+                btn.html('Pause');
+                console.log('change to pause');
+                console.log(tag.html())
+            }
+        }
+    </script>
     <script src="{{ STATIC_URL }}js/create.js"></script>
 {% endblock %}

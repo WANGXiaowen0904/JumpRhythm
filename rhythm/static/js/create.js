@@ -53,7 +53,7 @@ let CreateMode = new function () {
             window.addEventListener('resize', resetCanvasAttr, false);
 
             bullet = new Bullet();
-            bulletSpeed = 3;
+            bulletSpeed = 2;
 
             resetCanvasAttr();
 
@@ -132,6 +132,14 @@ let CreateMode = new function () {
     }
 
     function loop() {
+        let control = $('#control');
+        if (control.html() === "0") { // reset
+            points = [];
+            control.html(2);
+        } else if (control.html() === "1") { // pause
+            return;
+        }
+
         context.clearRect(WORLD_RECT.x, WORLD_RECT.y, WORLD_RECT.width, WORLD_RECT.height);
 
         let point, i, color;
