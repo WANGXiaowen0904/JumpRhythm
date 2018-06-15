@@ -16,6 +16,8 @@ let CreateMode = new function () {
         width: 810,
         height: 540
     };
+    const PAUSE_TEXT = 'Pause';
+    const CONTINUE_TEXT = 'Continue';
 
     let canvas;
     let context;
@@ -24,6 +26,7 @@ let CreateMode = new function () {
 
     let canvasLeft;
     let canvasTop;
+    let paused = false;
     let mouseIsDown = false;
     let mouseX;
     let mouseY;
@@ -48,6 +51,9 @@ let CreateMode = new function () {
             document.addEventListener('mousedown', dragPoint, false);
             document.addEventListener('mouseup', putPoint, false);
             canvas.addEventListener('dblclick', drawPoints, false);
+            // Button onclick listener
+            $('#reset-btn').click(resetWorld);
+            $('#pause-btn').click(pauseHandler);
             // TODO: add keyboard event?
             // Other events
             window.addEventListener('resize', resetCanvasAttr, false);
@@ -67,7 +73,8 @@ let CreateMode = new function () {
 
         updateMouseCoordinate(event);
         createPointAt(mouseX, mouseY);
-        // TODO: save point with hash
+
+        updateHashRecord();
     }
 
     function resetCanvasAttr() {
@@ -93,6 +100,25 @@ let CreateMode = new function () {
         event.preventDefault();
         mouseIsDown = false;
         stopDragging();
+        updateHashRecord();
+    }
+
+    function resetWorld() {
+        paused = true;
+        points = [];
+        updateHashRecord();
+        paused = false;
+        $('#pause-btn').html(PAUSE_TEXT);
+    }
+
+    function pauseHandler() {
+        let btn = $('#pause-btn');
+        paused = !paused;
+        if (paused) {
+            btn.html(CONTINUE_TEXT);
+        } else {
+            btn.html(PAUSE_TEXT);
+        }
     }
 
     function updateMouseCoordinate(event) {
@@ -105,6 +131,19 @@ let CreateMode = new function () {
         point.coordinate.x = x;
         point.coordinate.y = y;
         points.push(point);
+    }
+
+    function updateHashRecord() {
+        let history = $('#history');
+        let hash = [];
+        for (let i = 0; i < points.length; ++i) {
+            let h = Math.round((points[i].coordinate.x / WORLD_RECT.width) * 1000) + 'x' + Math.round((points[i].coordinate.y / WORLD_RECT.height) * 1000);
+            hash.push(h);
+        }
+        if (hash.length > 0) {
+            hash.push(bulletSpeed.toString());
+        }
+        history.html(hash.join('-'));
     }
 
     function startDragging() {
@@ -132,14 +171,9 @@ let CreateMode = new function () {
     }
 
     function loop() {
-        let control = $('#control');
-        if (control.html() === "0") { // reset
-            points = [];
-            control.html(2);
-        } else if (control.html() === "1") { // pause
+        if (paused) {
             return;
         }
-
         context.clearRect(WORLD_RECT.x, WORLD_RECT.y, WORLD_RECT.width, WORLD_RECT.height);
 
         let point, i, color;
@@ -235,7 +269,6 @@ let CreateMode = new function () {
                 }
                 target.emit(points[bullet.index].coordinate);
                 let cellId = getCellIdFromCoordinate(target.cloneCoordinate());
-                console.log(cellId);
                 playChord(cellId);
             }
 
