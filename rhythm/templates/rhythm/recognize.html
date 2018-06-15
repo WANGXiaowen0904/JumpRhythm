@@ -1,9 +1,9 @@
 {% extends 'rhythm/base.html' %}
 
 {% block audios %}
-    <div>
-
-    </div>
+    {% if audio %}
+        <audio id="audio-source" src="{{ audio }}"></audio>
+    {% endif %}
 {% endblock %}
 
 {% block container %}
@@ -21,8 +21,8 @@
         <a>
             <button class="btn btn-primary" type="button" onclick="AutoOpenDialog()">Upload</button>
         </a>
-        <a href="#">
-            <button class="btn btn-primary" type="button">Placeholder</button>
+        <a>
+            <button class="btn btn-primary" type="button">Play</button>
         </a>
         <a href="#">
             <button class="btn btn-primary" type="button">Placeholder</button>
@@ -35,8 +35,13 @@
         function AutoOpenDialog() {
             $("#file-input").click();
         }
+
         function AutoUploadFile() {
             $("#file-submit").click();
+        }
+
+        function PlayUploadedAudio() {
+            $("#")
         }
     </script>
     <script src="{{ STATIC_URL }}js/rhythm.js"></script>
