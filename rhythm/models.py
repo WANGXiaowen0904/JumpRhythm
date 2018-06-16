@@ -16,5 +16,5 @@ class Fragment(models.Model):
     upload = models.FileField(upload_to='uploads/%Y/%m/%d/')
 
     def __str__(self):
-        return self.user.username, self.upload.name
+        return self.user.username + ': ' + self.upload.name
 

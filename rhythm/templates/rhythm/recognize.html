@@ -1,7 +1,9 @@
 {% extends 'rhythm/base.html' %}
 
 {% block audios %}
+    {% if audio_src %}
     <audio id="audio-source" src="{{ audio_src }}"></audio>
+    {% endif %}
 {% endblock %}
 
 {% block container %}
@@ -31,12 +33,13 @@
             <button id="recognize-btn" class="btn btn-primary" type="button">Recognize</button>
         </div>
         <div>
-            <button class="btn btn-primary" type="button">Placeholder</button>
+            <button id="pause-btn" class="btn btn-primary" type="button">Pause</button>
         </div>
     </div>
 {% endblock %}
 
 {% block script %}
+    <script src="{{ STATIC_URL }}js/recognize.js"></script>
     <script type="text/javascript">
         $(function () {
             $('#upload-btn').click(function () {
@@ -44,15 +47,12 @@
             });
 
             $('#file-input').change(function () {
-                {#let objectUrl = window.URL.createObjectURL(this.files[0]);#}
-                {#$('#audio-source').attr("src", objectUrl);#}
                 $('#file-submit').click();
             });
 
             $('#recognize-btn').click(function () {
-                $('#audio-source').play();
-            })
+                RecognizeMode.recognize();
+            });
         });
     </script>
-    <script src="{{ STATIC_URL }}js/recognize.js"></script>
 {% endblock %}

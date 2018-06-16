@@ -2,7 +2,7 @@
 {% load staticfiles %}
 
 {% block audios %}
-    {% for i in range_list %}
+    {% for i in request.session.range_list %}
         <audio id="chord{{ i }}" src="{{ STATIC_URL }}audio/{{ i }}.mp3" preload="auto"></audio>
     {% endfor %}
 {% endblock %}

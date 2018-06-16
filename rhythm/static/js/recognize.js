@@ -9,7 +9,6 @@ let RecognizeMode = new function () {
     const N_ROWS = 3;
     const N_COLS = 7;
     const N_CHORDS = N_COLS * N_ROWS;
-    const N_CHANNELS = Math.ceil(N_CHORDS / 2);
     const WORLD_RECT = {
         x: 0,
         y: 0,
@@ -24,14 +23,15 @@ let RecognizeMode = new function () {
 
     let worldCanvas, helpCanvas;
     let worldContext, helpContext;
-    let audioChords;
-    let audioChannels = [];
+
+    let audio;
 
     let canvasLeft;
     let canvasTop;
     let paused = false;
     let needHelp = true;
     let mouseIsDown = false;
+    let banded = false;
     let mouseX;
     let mouseY;
 
@@ -49,23 +49,23 @@ let RecognizeMode = new function () {
         bulletSpeedLevel = 4;
 
         if (worldCanvas && worldCanvas.getContext) {
-            audioChords = $('audio').toArray();
-            for (let i = 0; i < N_CHANNELS; ++i) {
-                audioChannels.push(new Audio(''));
-            }
             worldContext = worldCanvas.getContext('2d');
-            // Mouse Events
-            document.addEventListener('mousemove', updateMouseCoordinate, false);
-            document.addEventListener('mousedown', dragPoint, false);
-            document.addEventListener('mouseup', putPoint, false);
-            worldCanvas.addEventListener('dblclick', drawPoints, false);
-            // Keyboard Event
-            $(document).keydown(updateSpeedLevel);
-            // Button onclick listener
-            $('#reset-btn').click(resetWorld);
-            $('#pause-btn').click(pauseHandler);
-            // Other events
-            window.addEventListener('resize', resizeAllCanvas, false);
+
+            if (!banded) {
+                // Mouse Events
+                $(document).mousemove(updateMouseCoordinate);
+                $(document).mousedown(dragPoint);
+                $(document).mouseup(putPoint);
+                $('#world').dblclick(drawPoints);
+                // Keyboard Event
+                $(document).keydown(updateSpeedLevel);
+                // Button onclick listener
+                // $('#reset-btn').click(resetWorld);
+                $('#pause-btn').click(pauseHandler);
+                // Other events
+                window.addEventListener('resize', resizeAllCanvas, false);
+                banded = true;
+            }
 
             bullet = new Bullet();
 
@@ -90,8 +90,16 @@ let RecognizeMode = new function () {
     };
 
     this.recognize = function () {
+        audio = $('#audio-source')[0];
 
-        setInterval(loop, TIME_INTERVAL);
+        let audioCtx = new window.AudioContext();
+        let analyser = audioCtx.createAnalyser();
+
+        // source = audioCtx.createMediaStreamSource(stream);
+        // source.connect(analyser);
+        // analyser.connect(distortion);
+        // audio.play();
+        // setInterval(loop, TIME_INTERVAL);
     };
 
     function drawPoints(event) {
@@ -141,13 +149,13 @@ let RecognizeMode = new function () {
         updateHashRecord();
     }
 
-    function resetWorld() {
-        paused = true;
-        points = [];
-        updateHashRecord();
-        paused = false;
-        $('#pause-btn').html(PAUSE_TEXT);
-    }
+    // function resetWorld() {
+    //     paused = true;
+    //     points = [];
+    //     updateHashRecord();
+    //     paused = false;
+    //     $('#pause-btn').html(PAUSE_TEXT);
+    // }
 
     function updateSpeedLevel(e) {
         if (e.keyCode === 38) { // up
@@ -419,13 +427,6 @@ let RecognizeMode = new function () {
         return row * N_COLS + col;
     }
 
-    function playChord(index) {
-        audioChannels[0].pause();
-        audioChannels[0].src = audioChords[index].src;
-        audioChannels[0].load();
-        audioChannels[0].play();
-        audioChannels.push(audioChannels.shift());
-    }
 };
 
 function Dot() {
