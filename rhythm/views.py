@@ -31,7 +31,8 @@ def create(request):
             history = request.POST.get('history')
             creation = Creation(user=request.user, record=history)
             creation.save()
-            return HttpResponse('Your work has been saved!')
+            url = reverse('create')
+            return HttpResponseRedirect(url)
         else:
             return HttpResponse('Please sign in first.')
 
@@ -52,5 +53,13 @@ def recognize(request):
         if request.user.is_authenticated:
             tip = 'Recognition History'
             request.session['tip'] = tip
-            # fragments = Fragment.objects.filter(user=request.user).order_by('-')
+            fragments = Fragment.objects.filter(user=request.user).order_by('-last_edited_at')
+            history_list = []
+            for fragment in fragments:
+                name = fragment.upload.name.split('/')[-1]
+                name = '.'.join(name.split('.')[:-1])
+                datetime = fragment.upload.name.split('/')[1:4]
+                datetime = '-'.join(datetime)
+                history_list.append({'name': name, 'record': datetime})
+            request.session['history_list'] = history_list
         return render(request, 'rhythm/recognize.html')

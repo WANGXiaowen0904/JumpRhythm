@@ -55,8 +55,8 @@
                     url: {% url 'create' %},
                     type: 'POST',
                     data: {'history': $('#history').html()},
-                    success: function (data) {
-                        alert(data);
+                    success: function () {
+                        alert('Your work has been saved!')
                     }
                 });
             {% else %}
