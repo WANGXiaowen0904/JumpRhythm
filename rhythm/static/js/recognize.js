@@ -4,7 +4,7 @@ let Util = new function () {
     };
 };
 
-let CreateMode = new function () {
+let RecognizeMode = new function () {
 
     const N_ROWS = 3;
     const N_COLS = 7;
@@ -32,7 +32,6 @@ let CreateMode = new function () {
     let paused = false;
     let needHelp = true;
     let mouseIsDown = false;
-    let banded = false;
     let mouseX;
     let mouseY;
 
@@ -55,30 +54,24 @@ let CreateMode = new function () {
                 audioChannels.push(new Audio(''));
             }
             worldContext = worldCanvas.getContext('2d');
-
-            if (!banded) {
-                // Mouse Events
-                $(document).mousemove(updateMouseCoordinate);
-                $(document).mousedown(dragPoint);
-                $(document).mouseup(putPoint);
-                $('#world').dblclick(drawPoints);
-                // Keyboard Event
-                $(document).keydown(updateSpeedLevel);
-                // Button onclick listener
-                $('#reset-btn').click(resetWorld);
-                $('#pause-btn').click(pauseHandler);
-                // Other events
-                window.addEventListener('resize', resizeAllCanvas, false);
-                banded = true;
-            }
+            // Mouse Events
+            document.addEventListener('mousemove', updateMouseCoordinate, false);
+            document.addEventListener('mousedown', dragPoint, false);
+            document.addEventListener('mouseup', putPoint, false);
+            worldCanvas.addEventListener('dblclick', drawPoints, false);
+            // Keyboard Event
+            $(document).keydown(updateSpeedLevel);
+            // Button onclick listener
+            $('#reset-btn').click(resetWorld);
+            $('#pause-btn').click(pauseHandler);
+            // Other events
+            window.addEventListener('resize', resizeAllCanvas, false);
 
             bullet = new Bullet();
 
             resetCanvasAttr(worldCanvas);
 
             updatePointsFromHash();
-
-            setInterval(loop, TIME_INTERVAL);
         }
 
         if (helpCanvas && helpCanvas.getContext) {
@@ -94,6 +87,11 @@ let CreateMode = new function () {
             });
             drawHelp();
         }
+    };
+
+    this.recognize = function () {
+
+        setInterval(loop, TIME_INTERVAL);
     };
 
     function drawPoints(event) {
@@ -519,4 +517,4 @@ Bullet.prototype.distanceTo = function (p) {
     return Math.sqrt(dx * dx + dy * dy);
 };
 
-CreateMode.init();
+RecognizeMode.init();

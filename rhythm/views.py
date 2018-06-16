@@ -40,6 +40,9 @@ def recognize(request):
         if request.user.is_authenticated:
             fragment = Fragment(user=request.user, upload=audio)
             fragment.save()
-        return render(request, 'rhythm/recognize.html', {'audio': audio})
-    tip = 'Recognition History'
-    return render(request, 'rhythm/recognize.html', {'tip': tip})
+            return render(request, 'rhythm/recognize.html', {'audio_src': fragment.upload})
+        else:
+            pass  # todo: require sign in
+    elif request.method == 'GET':
+        tip = 'Recognition History'
+        return render(request, 'rhythm/recognize.html', {'tip': tip})
