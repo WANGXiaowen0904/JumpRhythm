@@ -17,7 +17,13 @@ def create(request):
     if request.method == 'GET':
         range_list = [i for i in range(1, 22)]
         tip = 'Creation History'
-        return render(request, 'rhythm/create.html', {'range_list': range_list, 'tip': tip})
+        history_list = Creation.objects.order_by('-last_edited_at')
+        context = {
+            'range_list': range_list,
+            'tip': tip,
+            'history_list': history_list,
+        }
+        return render(request, 'rhythm/create.html', context)
     elif request.method == 'POST':
         if request.user.is_authenticated:
             history = request.POST.get('history')

@@ -259,6 +259,12 @@ p.noCanvas {
     text-align: center;
 }
 
+.overview > .list-group-item-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 /*-------------------------------*/
 /*       Hamburger-Cross         */
 /*-------------------------------*/

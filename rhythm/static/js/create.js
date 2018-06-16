@@ -18,7 +18,7 @@ let CreateMode = new function () {
     };
     const PAUSE_TEXT = 'Pause';
     const CONTINUE_TEXT = 'Continue';
-    const TIME_INTERVAL = 50; // ms
+    const TIME_INTERVAL = 80; // ms
     const SPEED_LEVEL_MAX = 7;
     const SPEED_LEVEL_MIN = 1;
 
@@ -70,6 +70,8 @@ let CreateMode = new function () {
             bullet = new Bullet();
 
             resetCanvasAttr(worldCanvas);
+
+            updatePointsFromHash();
 
             setInterval(loop, TIME_INTERVAL);
         }
@@ -187,6 +189,28 @@ let CreateMode = new function () {
         history.html(hash.join('-'));
     }
 
+    function updatePointsFromHash() {
+        let history = $('#history').text();
+        let pointsPos = history.split('-');
+        let p, x, y;
+        points = [];
+        while (pointsPos && pointsPos.length) {
+            p = pointsPos.shift().split('x');
+            if (p.length === 2) {
+                x = parseInt(p[0]) / 1000 * WORLD_RECT.width;
+                y = parseInt(p[1]) / 1000 * WORLD_RECT.height;
+                if (!isNaN(x) && !isNaN(y)) {
+                    createPointAt(x, y);
+                }
+            } else {
+                // Get the speed level if any
+                if (!isNaN(parseInt(p[0]))) {
+                    bulletSpeedLevel = parseInt(p[0]);
+                }
+            }
+        }
+    }
+
     function drawHelp() {
         helpContext.lineWidth = 3;
         helpContext.strokeStyle = "lightgrey";
@@ -235,7 +259,6 @@ let CreateMode = new function () {
             return;
         }
         worldContext.clearRect(WORLD_RECT.x, WORLD_RECT.y, WORLD_RECT.width, WORLD_RECT.height);
-
         let point, i, color;
         let deadPoints = [];
 
