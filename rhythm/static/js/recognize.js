@@ -31,7 +31,6 @@ let RecognizeMode = new function () {
     let canvasTop;
     let paused = true;
     let needHelp = true;
-    let mouseIsDown = false;
     let banded = false;
     let mouseX;
     let mouseY;
@@ -175,19 +174,6 @@ let RecognizeMode = new function () {
         return countdown < 1 ? 1 : countdown;
     }
 
-    function drawPoints(event) {
-        event.preventDefault();
-        mouseIsDown = true;
-
-        updateMouseCoordinate(event);
-        createPointAt(mouseX, mouseY);
-        if (points.length === 1) {
-            bullet.coordinates = [{x: mouseX, y: mouseY}];
-        }
-
-        updateHashRecord();
-    }
-
     function resetCanvasAttr(canvas) {
         canvas.width = WORLD_RECT.width;
         canvas.height = WORLD_RECT.height;
@@ -206,20 +192,6 @@ let RecognizeMode = new function () {
         if (needHelp) {
             drawHelp();
         }
-    }
-
-    function dragPoint(event) {
-        event.preventDefault();
-        mouseIsDown = true;
-        updateMouseCoordinate(event);
-        startDragging();
-    }
-
-    function putPoint(event) {
-        event.preventDefault();
-        mouseIsDown = false;
-        stopDragging();
-        updateHashRecord();
     }
 
     function resetWorld() {
@@ -250,51 +222,11 @@ let RecognizeMode = new function () {
         }
     }
 
-    function updateMouseCoordinate(event) {
-        mouseX = event.clientX - canvasLeft;
-        mouseY = event.clientY - canvasTop;
-    }
-
     function createPointAt(x, y) {
         let point = new Point();
         point.coordinate.x = x;
         point.coordinate.y = y;
         points.push(point);
-    }
-
-    function updateHashRecord() {
-        let history = $('#history');
-        let hash = [];
-        for (let i = 0; i < points.length; ++i) {
-            let h = Math.round((points[i].coordinate.x / WORLD_RECT.width) * 1000) + 'x' + Math.round((points[i].coordinate.y / WORLD_RECT.height) * 1000);
-            hash.push(h);
-        }
-        if (hash.length > 0) {
-            hash.push(bulletSpeedLevel.toString());
-        }
-        history.html(hash.join('-'));
-    }
-
-    function updatePointsFromHash() {
-        let history = $('#history').text();
-        let pointsPos = history.split('-');
-        let p, x, y;
-        points = [];
-        while (pointsPos && pointsPos.length) {
-            p = pointsPos.shift().split('x');
-            if (p.length === 2) {
-                x = parseInt(p[0]) / 1000 * WORLD_RECT.width;
-                y = parseInt(p[1]) / 1000 * WORLD_RECT.height;
-                if (!isNaN(x) && !isNaN(y)) {
-                    createPointAt(x, y);
-                }
-            } else {
-                // Get the speed level if any
-                if (!isNaN(parseInt(p[0]))) {
-                    bulletSpeedLevel = parseInt(p[0]);
-                }
-            }
-        }
     }
 
     function drawHelp() {
@@ -313,30 +245,6 @@ let RecognizeMode = new function () {
             helpContext.moveTo(j * dx, 0);
             helpContext.lineTo(j * dx, helpCanvas.height);
             helpContext.stroke();
-        }
-    }
-
-    function startDragging() {
-        let minDistance = 1e5;
-        let currentDistance, minPos;
-        for (let i = 0; i < points.length; ++i) {
-            let point = points[i];
-            currentDistance = point.distanceTo({x: mouseX, y: mouseY});
-            if (currentDistance < minDistance && currentDistance < Math.max(point.size.current, 15)) {
-                minDistance = currentDistance;
-                minPos = i;
-            }
-        }
-        if (points[minPos]) {
-            points[minPos].dragging = true;
-        }
-    }
-
-    function stopDragging() {
-        for (let i = 0; i < points.length; ++i) {
-            if (points[i]) {
-                points[i].dragging = false;
-            }
         }
     }
 
@@ -485,19 +393,6 @@ let RecognizeMode = new function () {
 
     function middleCoordinate(a, b) {
         return a + (b - a) / 2;
-    }
-
-    function getCellIdFromCoordinate(p) {
-        let dx = WORLD_RECT.width / N_COLS;
-        let dy = WORLD_RECT.height / N_ROWS;
-        let col = Math.floor(p.x / dx);
-        let row = Math.floor(p.y / dy);
-        col = col >= N_COLS ? col - 1 : col;
-        row = row >= N_ROWS ? row - 1 : row;
-        col = col < 0 ? 0 : col;
-        row = row < 0 ? 0 : row;
-
-        return row * N_COLS + col;
     }
 
 };
