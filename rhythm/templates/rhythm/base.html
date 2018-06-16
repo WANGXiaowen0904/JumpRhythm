@@ -52,9 +52,14 @@
             </li>
             <li>
                 <div class="list-group">
-                    <a href="#" class="list-group-item">
-                        <p class="list-group-item-text">...</p>
-                    </a>
+                    <div id="tip" class="list-group-item">
+                        <p>{{ tip }}</p>
+                    </div>
+                    {% if request.user.is_authenticated %}
+                        <a href="#" class="list-group-item">
+                            <p class="list-group-item-text">...</p>
+                        </a>
+                    {% endif %}
                 </div>
             </li>
         </ul>
@@ -77,11 +82,13 @@
 <!-- /#wrapper -->
 
 {#scripts#}
-<script src="{% static "js/jquery.min.js" %}"></script>
-<script src="{% static "js/bootstrap.min.js" %}"></script>
+<script src="{{ STATIC_URL }}js/jquery.min.js"></script>
+<script src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+<script src="{{ STATIC_URL }}js/sidebar.js"></script>
 <script>
     $(document).ready(function () {
-        var trigger = $('.hamburger'),
+        // language=JQuery-CSS
+        let trigger = $('.hamburger'),
             overlay = $('.overlay'),
             isClosed = false;
 
@@ -91,7 +98,7 @@
 
         function hamburger_cross() {
 
-            if (isClosed == true) {
+            if (isClosed) {
                 overlay.hide();
                 trigger.removeClass('is-open');
                 trigger.addClass('is-closed');
@@ -108,8 +115,7 @@
             $('#wrapper').toggleClass('toggled');
         });
     });
-</script>
-<script>
+
     function JumpToCreatePage() {
         window.location = {% url 'create' %};
     }

@@ -6,13 +6,18 @@ from .models import Creation, Fragment
 
 # Create your views here.
 def index(request):
-    return render(request, 'rhythm/index.html')
+    if request.user.is_authenticated:
+        tip = 'Choose a mode to enjoy more.'
+    else:
+        tip = 'Sign in to enjoy more.'
+    return render(request, 'rhythm/index.html', {'tip': tip})
 
 
 def create(request):
     if request.method == 'GET':
         range_list = [i for i in range(1, 22)]
-        return render(request, 'rhythm/create.html', {'range_list': range_list})
+        tip = 'Creation History'
+        return render(request, 'rhythm/create.html', {'range_list': range_list, 'tip': tip})
     elif request.method == 'POST':
         if request.user.is_authenticated:
             history = request.POST.get('history')
@@ -30,4 +35,5 @@ def recognize(request):
             fragment = Fragment(user=request.user, upload=audio)
             fragment.save()
         return render(request, 'rhythm/recognize.html', {'audio': audio})
-    return render(request, 'rhythm/recognize.html')
+    tip = 'Recognition History'
+    return render(request, 'rhythm/recognize.html', {'tip': tip})
