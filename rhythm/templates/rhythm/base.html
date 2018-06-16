@@ -44,9 +44,9 @@
             </li>
             <li>
                 <div class="btn-group mode" role="group" aria-label="...">
-                    <button type="button" class="btn btn-default" onclick="jumpToCreatePage()">Create</button>
-                    <button type="button" class="btn btn-default" onclick="jumpToRecognizePage()">Recognize</button>
-                    <button type="button" class="btn btn-default">Challenge</button>
+                    <button id="create-btn" type="button" class="btn btn-default">Create</button>
+                    <button id="recognize-btn" type="button" class="btn btn-default">Recognize</button>
+                    <button id="challenge-btn" type="button" class="btn btn-default">Challenge</button>
                 </div>
             </li>
             <li>
@@ -124,13 +124,15 @@
         });
     });
 
-    function jumpToCreatePage() {
-        window.location = {% url 'create' %};
-    }
+    $(function () {
+        $('#create-btn').click(function () {
+            window.location = {% url 'create' %};
+        });
 
-    function jumpToRecognizePage() {
-        window.location = {% url 'recognize' %};
-    }
+        $('#recognize-btn').click(function () {
+            window.location = {% url 'recognize' %};
+        });
+    });
 
     function fillHistory(that) {
         let h = $(that).find('p').text();
