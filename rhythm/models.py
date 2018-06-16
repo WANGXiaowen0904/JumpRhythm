@@ -14,7 +14,8 @@ class Creation(models.Model):
 class Fragment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     upload = models.FileField(upload_to='uploads/%Y/%m/%d/')
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_edited_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.user.username + ': ' + self.upload.name
-

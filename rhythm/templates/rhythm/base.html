@@ -52,7 +52,13 @@
             <li>
                 <div class="list-group">
                     <div id="tip" class="list-group-item">
-                        <p>{{ tip }}</p>
+                        <p>
+                            {% if request.user.is_authenticated %}
+                                {{ request.session.tip }}
+                            {% else %}
+                                Sign in to enjoy more.
+                            {% endif %}
+                        </p>
                     </div>
                     {% if request.session.history_list %}
                         {% for history in request.session.history_list %}

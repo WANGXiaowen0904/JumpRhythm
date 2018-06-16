@@ -9,18 +9,17 @@ from .models import Creation, Fragment
 def index(request):
     if request.user.is_authenticated:
         tip = 'Choose a mode to enjoy more.'
-    else:
-        tip = 'Sign in to enjoy more.'
-    return render(request, 'rhythm/index.html', {'tip': tip})
+        request.session['tip'] = tip
+    return render(request, 'rhythm/index.html')
 
 
 def create(request):
     if request.method == 'GET':
         range_list = [i for i in range(1, 22)]
-        tip = 'Creation History'
         request.session['range_list'] = range_list
-        request.session['tip'] = tip
         if request.user.is_authenticated:
+            tip = 'Creation History'
+            request.session['tip'] = tip
             creations = Creation.objects.filter(user_id=request.user.id).order_by('-last_edited_at')
             history_list = []
             for creation in creations:
@@ -50,6 +49,8 @@ def recognize(request):
         else:
             return HttpResponse('Please sign in first')  # todo: require sign in
     elif request.method == 'GET':
-        tip = 'Recognition History'
-        request.session['tip'] = tip
+        if request.user.is_authenticated:
+            tip = 'Recognition History'
+            request.session['tip'] = tip
+            # fragments = Fragment.objects.filter(user=request.user).order_by('-')
         return render(request, 'rhythm/recognize.html')
