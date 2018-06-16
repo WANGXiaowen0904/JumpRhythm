@@ -513,10 +513,11 @@ Bullet.prototype.addCoordinate = function (c) {
     this.coordinates.push(c);
 };
 Bullet.prototype.distanceTo = function (p) {
-    let coordinate = this.getCoordinate();
+    let coordinate = this.coordinates[this.coordinates.length - 1];
     let dx = p.x - coordinate.x;
     let dy = p.y - coordinate.y;
     return Math.sqrt(dx * dx + dy * dy);
 };
 
 CreateMode.init();
+window.mode = 1; // create mode

@@ -1,7 +1,9 @@
 let Util = new function () {
+
     this.random = function (a, b) {
         return Math.random() * (b - a) + a;
     };
+
 };
 
 let RecognizeMode = new function () {
@@ -20,15 +22,14 @@ let RecognizeMode = new function () {
     const TIME_INTERVAL = 80; // ms
     const SPEED_LEVEL_MAX = 7;
     const SPEED_LEVEL_MIN = 1;
+    const EPSILON = 2;
 
     let worldCanvas, helpCanvas;
     let worldContext, helpContext;
 
-    let audio;
-
     let canvasLeft;
     let canvasTop;
-    let paused = false;
+    let paused = true;
     let needHelp = true;
     let mouseIsDown = false;
     let banded = false;
@@ -38,6 +39,14 @@ let RecognizeMode = new function () {
     let points = [];
     let bullet;
     let bulletSpeedLevel;
+
+    let audio;
+    let audioContext;
+    let source;
+    let analyser;
+
+    let timer;
+    let duration;
 
     this.init = function () {
         worldCanvas = $('#world')[0];
@@ -53,10 +62,10 @@ let RecognizeMode = new function () {
 
             if (!banded) {
                 // Mouse Events
-                $(document).mousemove(updateMouseCoordinate);
-                $(document).mousedown(dragPoint);
-                $(document).mouseup(putPoint);
-                $('#world').dblclick(drawPoints);
+                // $(document).mousemove(updateMouseCoordinate);
+                // $(document).mousedown(dragPoint);
+                // $(document).mouseup(putPoint);
+                // $('#world').dblclick(drawPoints);
                 // Keyboard Event
                 $(document).keydown(updateSpeedLevel);
                 // Button onclick listener
@@ -71,7 +80,7 @@ let RecognizeMode = new function () {
 
             resetCanvasAttr(worldCanvas);
 
-            updatePointsFromHash();
+            // updatePointsFromHash();
         }
 
         if (helpCanvas && helpCanvas.getContext) {
@@ -85,22 +94,86 @@ let RecognizeMode = new function () {
                     helpContext.clearRect(0, 0, WORLD_RECT.width, WORLD_RECT.height);
                 }
             });
-            drawHelp();
+            // drawHelp();
         }
+
+        setInterval(loop, TIME_INTERVAL);
     };
 
     this.recognize = function () {
         audio = $('#audio-source')[0];
-
-        let audioCtx = new window.AudioContext();
-        let analyser = audioCtx.createAnalyser();
-
-        // source = audioCtx.createMediaStreamSource(stream);
-        // source.connect(analyser);
-        // analyser.connect(distortion);
-        // audio.play();
-        // setInterval(loop, TIME_INTERVAL);
+        audioContext = new window.AudioContext();
+        duration = parseInt(audio.duration) * 1000;
+        try {
+            source = audioContext.createMediaElementSource(audio);
+            analyser = audioContext.createAnalyser();
+            source.connect(analyser);
+            analyser.connect(audioContext.destination);
+        } catch (e) {
+            console.log('handle exception');
+            console.log(e);
+        } finally {
+            if (audio && audioContext) {
+                resetWorld();
+                audio.load();
+                audio.play();
+                paused = false;
+                timer = setInterval(generatePoints, TIME_INTERVAL);
+            }
+        }
     };
+
+    function generatePoints() {
+        if (paused) {
+            return;
+        }
+        let bufferArray = new Uint8Array(analyser.frequencyBinCount);
+        analyser.getByteTimeDomainData(bufferArray);
+        if (points.length < 2 || getCountdown() === 1) {
+            updatePointsFromFreq(bufferArray[0]);
+        }
+        duration -= TIME_INTERVAL;
+        if (duration < 0) {
+            clearInterval(timer);
+            resetWorld();
+            paused = true;
+        }
+    }
+
+    function updatePointsFromFreq(freq) {
+        let pos = Math.floor(N_CHORDS * freq / 256);
+        if (isNaN(pos)) {
+            return;
+        }
+        pos = pos === N_CHORDS ? pos - 1 : pos;
+        let x = pos % N_COLS;
+        let y = N_ROWS - Math.floor(pos / N_COLS) - 1; // y: from top to bottom, pitch: from bottom to top
+        let dx = WORLD_RECT.width / N_COLS;
+        let dy = WORLD_RECT.height / N_ROWS;
+        let centerX = dx * (x + .5);
+        let centerY = dy * (y + .5);
+        let isolated = false;
+        while (!isolated) {
+            isolated = true;
+            centerX += dx * Util.random(-.5, .5);
+            centerY += dy * Util.random(-.5, .5);
+            for (let i = 0; i < points.length; ++i) {
+                if (points[i].distanceTo({x: centerX, y: centerY}) < EPSILON) {
+                    isolated = false;
+                    break;
+                }
+            }
+        }
+        createPointAt(centerX, centerY);
+        if (points.length === N_CHORDS) {
+            points.shift();
+        }
+    }
+
+    function getCountdown() {
+        let countdown = 18 - 2 * bulletSpeedLevel - bullet.past;
+        return countdown < 1 ? 1 : countdown;
+    }
 
     function drawPoints(event) {
         event.preventDefault();
@@ -149,13 +222,13 @@ let RecognizeMode = new function () {
         updateHashRecord();
     }
 
-    // function resetWorld() {
-    //     paused = true;
-    //     points = [];
-    //     updateHashRecord();
-    //     paused = false;
-    //     $('#pause-btn').html(PAUSE_TEXT);
-    // }
+    function resetWorld() {
+        paused = true;
+        points = [];
+        worldContext.clearRect(WORLD_RECT.x, WORLD_RECT.y, WORLD_RECT.width, WORLD_RECT.height);
+        paused = false;
+        $('#pause-btn').html(PAUSE_TEXT);
+    }
 
     function updateSpeedLevel(e) {
         if (e.keyCode === 38) { // up
@@ -170,8 +243,10 @@ let RecognizeMode = new function () {
         paused = !paused;
         if (paused) {
             btn.html(CONTINUE_TEXT);
+            audio.pause();
         } else {
             btn.html(PAUSE_TEXT);
+            audio.play();
         }
     }
 
@@ -306,8 +381,7 @@ let RecognizeMode = new function () {
             }
 
 
-            point.scale = Math.max(Math.min(point.coordinate.y / WORLD_RECT.height, 1), 0.2);
-
+            point.scale = 0.1 + Math.min(point.coordinate.y / WORLD_RECT.height, 1) * 0.8; // 0.1 ~ 0.9
             color = worldContext.createRadialGradient(
                 point.coordinate.x, point.coordinate.y, 0,
                 point.coordinate.x, point.coordinate.y, point.size.current
@@ -347,14 +421,13 @@ let RecognizeMode = new function () {
             let target = points[bullet.index];
             let dX = target.coordinate.x - bullet.getCoordinate().x;
             let dY = target.coordinate.y - bullet.getCoordinate().y;
-            let dT = 18 - 2 * bulletSpeedLevel - bullet.past;
-            dT = dT < 1 ? 1 : dT;
+            let dT = getCountdown();
             let dot = {x: bullet.getCoordinate().x, y: bullet.getCoordinate().y};
             dot.x += dX / dT;
             dot.y += dY / dT;
             bullet.addCoordinate(dot);
 
-            if (bullet.distanceTo(target.coordinate) < Math.min(target.size.current, 3)) {
+            if (bullet.distanceTo(target.coordinate) < EPSILON) {
                 bullet.index++;
                 bullet.past = 0;
                 bullet.color = target.color;
@@ -362,11 +435,11 @@ let RecognizeMode = new function () {
                     bullet.index = 0;
                 }
                 target.emit(points[bullet.index].coordinate);
-                let cellId = getCellIdFromCoordinate(target.cloneCoordinate());
-                playChord(cellId);
+                // let cellId = getCellIdFromCoordinate(target.cloneCoordinate());
+                // playChord(cellId);
             }
 
-            color = generateColor(bullet.color, 1);
+            color = generateColor(bullet.color, .5);
 
             let cc = bullet.coordinates[0];
             let nc = bullet.coordinates[1];
@@ -512,10 +585,11 @@ Bullet.prototype.addCoordinate = function (c) {
     this.coordinates.push(c);
 };
 Bullet.prototype.distanceTo = function (p) {
-    let coordinate = this.getCoordinate();
+    let coordinate = this.coordinates[this.coordinates.length - 1];
     let dx = p.x - coordinate.x;
     let dy = p.y - coordinate.y;
     return Math.sqrt(dx * dx + dy * dy);
 };
 
 RecognizeMode.init();
+window.mode = 2;

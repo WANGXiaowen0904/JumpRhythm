@@ -2,7 +2,7 @@
 
 {% block audios %}
     {% if request.session.src %}
-    <audio id="audio-source" src="{{ request.session.src }}"></audio>
+        <audio id="audio-source" src="{{ request.session.src }}"></audio>
     {% endif %}
 {% endblock %}
 
@@ -43,7 +43,11 @@
     <script type="text/javascript">
         $(function () {
             $('#upload-btn').click(function () {
-                $("#file-input").click();
+                {% if request.user.is_authenticated %}
+                    $("#file-input").click();
+                {% else %}
+                    alert('Please sign in first');
+                {% endif %}
             });
 
             $('#file-input').change(function () {

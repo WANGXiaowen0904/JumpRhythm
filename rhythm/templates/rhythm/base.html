@@ -135,8 +135,12 @@
     function fillHistory(that) {
         let h = $(that).find('p').text();
         $('#history').text(h);
-        if (CreateMode) {
+        if (window.mode === 1) {
             CreateMode.init();
+        } else if (window.mode === 2) {
+            console.log('recognize mode');
+        } else if (window.mode === 3) {
+            console.log('challenge mode');
         }
     }
 </script>
