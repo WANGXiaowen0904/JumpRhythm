@@ -1,6 +1,7 @@
+from django.http import HttpResponse
 from django.shortcuts import render
 
-from .models import Fragment
+from .models import Creation, Fragment
 
 
 # Create your views here.
@@ -9,8 +10,17 @@ def index(request):
 
 
 def create(request):
-    range_list = [i for i in range(1, 22)]
-    return render(request, 'rhythm/create.html', {'range_list': range_list})
+    if request.method == 'GET':
+        range_list = [i for i in range(1, 22)]
+        return render(request, 'rhythm/create.html', {'range_list': range_list})
+    elif request.method == 'POST':
+        if request.user.is_authenticated:
+            history = request.POST.get('history')
+            creation = Creation(user=request.user, record=history)
+            creation.save()
+            return HttpResponse('ok')
+        else:
+            return HttpResponse('please sign in first')
 
 
 def recognize(request):

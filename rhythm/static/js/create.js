@@ -1,7 +1,7 @@
 let Util = new function () {
     this.random = function (a, b) {
         return Math.random() * (b - a) + a;
-    }
+    };
 };
 
 let CreateMode = new function () {
@@ -117,6 +117,9 @@ let CreateMode = new function () {
     function resizeAllCanvas(event) {
         resetCanvasAttr(worldCanvas);
         resetCanvasAttr(helpCanvas);
+        if (needHelp) {
+            drawHelp();
+        }
     }
 
     function dragPoint(event) {
