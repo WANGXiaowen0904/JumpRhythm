@@ -1,8 +1,8 @@
 {% extends 'rhythm/base.html' %}
 
 {% block audios %}
-    {% if audio_src %}
-    <audio id="audio-source" src="{{ audio_src }}"></audio>
+    {% if request.session.src %}
+    <audio id="audio-source" src="{{ request.session.src }}"></audio>
     {% endif %}
 {% endblock %}
 

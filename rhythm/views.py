@@ -44,9 +44,12 @@ def recognize(request):
             fragment = Fragment(user=request.user, upload=audio)
             fragment.save()
             src = '/media/' + fragment.upload.__str__()
-            return render(request, 'rhythm/recognize.html', {'audio_src': src})
+            request.session['src'] = src
+            url = reverse('recognize')
+            return HttpResponseRedirect(url)
         else:
-            pass  # todo: require sign in
+            return HttpResponse('Please sign in first')  # todo: require sign in
     elif request.method == 'GET':
         tip = 'Recognition History'
-        return render(request, 'rhythm/recognize.html', {'tip': tip})
+        request.session['tip'] = tip
+        return render(request, 'rhythm/recognize.html')
