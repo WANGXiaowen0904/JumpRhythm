@@ -44,9 +44,9 @@
             </li>
             <li>
                 <div class="btn-group mode" role="group" aria-label="...">
-                    <button id="create-btn" type="button" class="btn btn-default">Create</button>
-                    <button id="recognize-btn" type="button" class="btn btn-default">Recognize</button>
-                    <button id="challenge-btn" type="button" class="btn btn-default">Challenge</button>
+                    <button id="create-mode" type="button" class="btn btn-default">Create</button>
+                    <button id="recognize-mode" type="button" class="btn btn-default">Recognize</button>
+                    <button id="challenge-mode" type="button" class="btn btn-default">Challenge</button>
                 </div>
             </li>
             <li>
@@ -147,15 +147,15 @@
     });
 
     $(function () {
-        $('#create-btn').click(function () {
+        $('#create-mode').click(function () {
             window.location = {% url 'create' %};
         });
 
-        $('#recognize-btn').click(function () {
+        $('#recognize-mode').click(function () {
             window.location = {% url 'recognize' %};
         });
 
-        $('#challenge-btn').click(function () {
+        $('#challenge-mode').click(function () {
             window.location = {% url 'challenge' %};
         });
     });
