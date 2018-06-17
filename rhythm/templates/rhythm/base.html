@@ -60,11 +60,11 @@
                             {% endif %}
                         </p>
                     </div>
-                    {% if request.session.history_list %}
-                        {% for history in request.session.history_list %}
+                    {% if request.session.records %}
+                        {% for record in request.session.records %}
                             <div class="list-group-item overview" onclick="fillHistory(this)">
-                                <h4 class="list-group-item-heading">{{ history.name }}</h4>
-                                <p class="list-group-item-text">{{ history.record }}</p>
+                                <h4 class="list-group-item-heading">{{ record.title }}</h4>
+                                <p class="list-group-item-text">{{ record.detail }}</p>
                             </div>
                         {% endfor %}
                     {% endif %}
@@ -101,7 +101,9 @@
                 </div><!-- /.modal-content -->
             </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->
-        <p><button data-toggle="modal" href="#guide" class="btn btn-primary btn-large">Help</button></p>
+        <p>
+            <button data-toggle="modal" href="#guide" class="btn btn-primary btn-large">Help</button>
+        </p>
         {% block container %}
         {% endblock %}
     </div>
@@ -159,9 +161,9 @@
     });
 
     function fillHistory(that) {
-        let h = $(that).find('p').text();
-        $('#history').text(h);
         if (window.mode === 1) {
+            let h = $(that).find('p').text();
+            $('#history').text(h);
             CreateMode.init();
         } else if (window.mode === 2) {
             console.log('recognize mode');

@@ -38,34 +38,38 @@
 {% endblock %}
 
 {% block script %}
-    {#    <script>#}
-    {#        function csrfSafeMethod(method) {#}
-    {#            // these HTTP methods do not require CSRF protection#}
-    {#            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));#}
-    {#        }#}
-    {##}
-    {#        let csrftoken = $("[name=csrfmiddlewaretoken]").val();#}
-    {#        $.ajaxSetup({#}
-    {#            beforeSend: function (xhr, settings) {#}
-    {#                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {#}
-    {#                    xhr.setRequestHeader("X-CSRFToken", csrftoken);#}
-    {#                }#}
-    {#            }#}
-    {#        });#}
-    {#        $('#save-btn').click(function () {#}
-    {#            {% if request.user.is_authenticated %}#}
-    {#                $.ajax({#}
-    {#                    url: {% url 'create' %},#}
-    {#                    type: 'POST',#}
-    {#                    data: {'history': $('#history').html()},#}
-    {#                    success: function () {#}
-    {#                        alert('Your work has been saved!')#}
-    {#                    }#}
-    {#                });#}
-    {#            {% else %}#}
-    {#                alert('Please sign in first.');#}
-    {#            {% endif %}#}
-    {#        })#}
-    {#    </script>#}
+    <script>
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+
+        let csrftoken = $("[name=csrfmiddlewaretoken]").val();
+        $.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+        $('#lf').bind("DOMNodeInserted", function () {
+            console.log($('#lf').text());
+            if ($('#lf').text() === '0') {
+                let score = $('#sc').text();
+                {% if request.user.is_authenticated %}
+                    $.ajax({
+                        url: {% url 'challenge' %},
+                        type: 'POST',
+                        data: {'score': score},
+                        success: function () {
+                            alert('Your score is ' + score)
+                        }
+                    });
+                {% else %}
+                    alert('Challenge failed, your score is ' + score);
+                {% endif %}
+            }
+        })
+    </script>
     <script src="{{ STATIC_URL }}js/challenge.js"></script>
 {% endblock %}
