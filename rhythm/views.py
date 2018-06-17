@@ -58,8 +58,7 @@ def recognize(request):
             for fragment in fragments:
                 name = fragment.upload.name.split('/')[-1]
                 name = '.'.join(name.split('.')[:-1])
-                datetime = fragment.upload.name.split('/')[1:4]
-                datetime = '-'.join(datetime)
+                datetime = str(fragment.created_at).split('.')[0]
                 records.append({'title': name, 'detail': datetime})
             request.session['records'] = records
         return render(request, 'rhythm/recognize.html')
