@@ -10,6 +10,10 @@ def index(request):
     if request.user.is_authenticated:
         tip = 'Choose a mode to enjoy more.'
         request.session['tip'] = tip
+    try:
+        del request.session['records']
+    except Exception as e:
+        print(e)
     return render(request, 'rhythm/index.html')
 
 

@@ -124,6 +124,7 @@ let RecognizeMode = new function () {
 
     function generatePoints() {
         if (paused) {
+            console.log('??')
             return;
         }
         let bufferArray = new Uint8Array(analyser.frequencyBinCount);
