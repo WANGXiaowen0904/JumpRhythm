@@ -1,0 +1,71 @@
+{% extends 'rhythm/base.html' %}
+{% load staticfiles %}
+
+{% block audios %}
+    {% for i in request.session.range_list %}
+        <audio id="chord{{ i }}" src="{{ STATIC_URL }}audio/{{ i }}.mp3" preload="auto"></audio>
+    {% endfor %}
+{% endblock %}
+
+{% block container %}
+    <h3 id="level">Level <span id="lv" class="label label-success">0</span></h3>
+    <h3 id="life">Life <span id="lf" class="label label-danger">5</span></h3>
+    <h3 id="score">Score <span id="sc" class="label label-info">0</span></h3>
+    <canvas id="help" class="create">
+        <p class="noCanvas">
+            You need a chrome to view this.
+        </p>
+    </canvas>
+    <canvas id="world" class="create">
+        <p class="noCanvas">
+            You need a chrome to view this.
+        </p>
+    </canvas>
+    <div id="under-canvas" class="mode">
+        <div>
+            <button id="help-btn" class="btn btn-primary" type="button">Grid</button>
+        </div>
+        <div>
+            <button id="play-btn" class="btn btn-primary" type="button">Play</button>
+        </div>
+        <div>
+            <button id="confirm-btn" class="btn btn-primary" type="button">Confirm</button>
+        </div>
+        <div>
+            <button id="reset-btn" class="btn btn-primary" type="button">Reset</button>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    {#    <script>#}
+    {#        function csrfSafeMethod(method) {#}
+    {#            // these HTTP methods do not require CSRF protection#}
+    {#            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));#}
+    {#        }#}
+    {##}
+    {#        let csrftoken = $("[name=csrfmiddlewaretoken]").val();#}
+    {#        $.ajaxSetup({#}
+    {#            beforeSend: function (xhr, settings) {#}
+    {#                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {#}
+    {#                    xhr.setRequestHeader("X-CSRFToken", csrftoken);#}
+    {#                }#}
+    {#            }#}
+    {#        });#}
+    {#        $('#save-btn').click(function () {#}
+    {#            {% if request.user.is_authenticated %}#}
+    {#                $.ajax({#}
+    {#                    url: {% url 'create' %},#}
+    {#                    type: 'POST',#}
+    {#                    data: {'history': $('#history').html()},#}
+    {#                    success: function () {#}
+    {#                        alert('Your work has been saved!')#}
+    {#                    }#}
+    {#                });#}
+    {#            {% else %}#}
+    {#                alert('Please sign in first.');#}
+    {#            {% endif %}#}
+    {#        })#}
+    {#    </script>#}
+    <script src="{{ STATIC_URL }}js/challenge.js"></script>
+{% endblock %}

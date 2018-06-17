@@ -63,3 +63,7 @@ def recognize(request):
                 history_list.append({'name': name, 'record': datetime})
             request.session['history_list'] = history_list
         return render(request, 'rhythm/recognize.html')
+
+
+def challenge(request):
+    return render(request, 'rhythm/challenge.html')

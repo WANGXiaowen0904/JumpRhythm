@@ -132,6 +132,10 @@
         $('#recognize-btn').click(function () {
             window.location = {% url 'recognize' %};
         });
+
+        $('#challenge-btn').click(function () {
+            window.location = {% url 'challenge' %};
+        });
     });
 
     function fillHistory(that) {

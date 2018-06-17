@@ -446,3 +446,25 @@ p.noCanvas {
     top: 670px;
     left: 340px;
 }
+
+#level {
+    position: absolute;
+    top: 70px;
+    left: 500px;
+    color: #ffffff;
+}
+
+#score {
+    position: absolute;
+    top: 70px;
+    left: 800px;
+    color: #ffffff;
+}
+
+#life {
+    position: absolute;
+    top: 70px;
+    left: 660px;
+    color: #ffffff;
+}
+
