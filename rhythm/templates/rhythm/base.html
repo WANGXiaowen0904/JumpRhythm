@@ -65,6 +65,7 @@
                             <div class="list-group-item overview" onclick="fillHistory(this)">
                                 <h4 class="list-group-item-heading">{{ record.title }}</h4>
                                 <p class="list-group-item-text">{{ record.detail }}</p>
+                                <div style="display: none;">{{ record.id }}</div>
                             </div>
                         {% endfor %}
                     {% endif %}
@@ -81,6 +82,7 @@
             <span class="hamb-middle"></span>
             <span class="hamb-bottom"></span>
         </button>
+        <div id="history-id" style="display: none;"></div>
         <div id="history" style="display: none;"></div>
         <div class="modal fade" id="guide">
             <div class="modal-dialog">
@@ -163,7 +165,9 @@
     function fillHistory(that) {
         if (window.mode === 1) {
             let h = $(that).find('p').text();
+            let id = $(that).find('div').text();
             $('#history').text(h);
+            $('#history-id').text(id);
             CreateMode.init();
         } else if (window.mode === 2) {
             console.log('recognize mode');

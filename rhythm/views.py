@@ -1,4 +1,4 @@
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, QueryDict
 from django.shortcuts import render
 from django.urls import reverse
 
@@ -27,7 +27,7 @@ def create(request):
             creations = Creation.objects.filter(user_id=request.user.id).order_by('-last_edited_at')
             records = []
             for creation in creations:
-                records.append({'title': creation.name, 'detail': creation.record})
+                records.append({'id': creation.id, 'title': creation.name, 'detail': creation.record})
             request.session['records'] = records
         return render(request, 'rhythm/create.html')
     elif request.method == 'POST':
@@ -37,6 +37,19 @@ def create(request):
             creation.save()
             url = reverse('create')
             return HttpResponseRedirect(url)
+        else:
+            return HttpResponse('Please sign in first.')
+    elif request.method == 'PUT':
+        if request.user.is_authenticated:
+            put = QueryDict(request.body)
+            history = put.get('history')
+            hid = put.get('history-id')
+            creation = Creation.objects.get(pk=hid)
+            creation.record = history
+            creation.save()
+            # url = reverse('create')
+            # return HttpResponseRedirect(url)
+            return render(request, 'rhythm/create.html', status=200)
         else:
             return HttpResponse('Please sign in first.')
 

@@ -29,6 +29,9 @@
             <button id="pause-btn" class="btn btn-primary" type="button">Pause</button>
         </div>
         <div>
+            <button id="update-btn" class="btn btn-primary" type="button">Update</button>
+        </div>
+        <div>
             <button id="save-btn" class="btn btn-primary" type="button">Save</button>
         </div>
     </div>
@@ -57,6 +60,23 @@
                     data: {'history': $('#history').html()},
                     success: function () {
                         alert('Your work has been saved!')
+                    }
+                });
+            {% else %}
+                alert('Please sign in first.');
+            {% endif %}
+        });
+        $('#update-btn').click(function () {
+            {% if request.user.is_authenticated %}
+                $.ajax({
+                    url: {% url 'create' %},
+                    type: 'PUT',
+                    data: {
+                        'history': $('#history').text(),
+                        'history-id': $('#history-id').text()
+                    },
+                    success: function () {
+                        alert('Your work has been updated!')
                     }
                 });
             {% else %}
