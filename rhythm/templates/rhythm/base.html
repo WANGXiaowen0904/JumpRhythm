@@ -47,6 +47,7 @@
                     <button id="create-mode" type="button" class="btn btn-default">Create</button>
                     <button id="recognize-mode" type="button" class="btn btn-default">Recognize</button>
                     <button id="challenge-mode" type="button" class="btn btn-default">Challenge</button>
+                    <button id="challenge-mode" type="button" class="btn btn-default">Challenge</button>
                 </div>
             </li>
             <li>
@@ -62,7 +63,7 @@
                     </div>
                     {% if request.session.records %}
                         {% for record in request.session.records %}
-                            <div class="list-group-item overview" onclick="fillHistory(this)">
+                            <div class="list-group-item overview">
                                 <h4 class="list-group-item-heading">{{ record.title }}</h4>
                                 <p class="list-group-item-text">{{ record.detail }}</p>
                                 <div style="display: none;">{{ record.id }}</div>
@@ -146,9 +147,27 @@
         $('[data-toggle="offcanvas"]').click(function () {
             $('#wrapper').toggleClass('toggled');
         });
+
+        $(document).bind("contextmenu", function (e) {
+            return false;
+        });
     });
 
     $(function () {
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+
+        let csrftoken = $("[name=csrfmiddlewaretoken]").val();
+        $.ajaxSetup({
+            beforeSend: function (xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+
         $('#create-mode').click(function () {
             window.location = {% url 'create' %};
         });
@@ -160,21 +179,44 @@
         $('#challenge-mode').click(function () {
             window.location = {% url 'challenge' %};
         });
-    });
 
-    function fillHistory(that) {
-        if (window.mode === 1) {
-            let h = $(that).find('p').text();
-            let id = $(that).find('div').text();
-            $('#history').text(h);
-            $('#history-id').text(id);
-            CreateMode.init();
-        } else if (window.mode === 2) {
-            console.log('recognize mode');
-        } else if (window.mode === 3) {
-            console.log('challenge mode');
+        let overviews = $('.overview');
+        for (let i = 0; i < overviews.length; ++i) {
+            $(overviews[i]).mousedown(function (event) {
+                if (event.which === 1) { // left
+                    if (window.mode === 1) {
+                        let h = $(this).find('p').text();
+                        let id = $(this).find('div').text();
+                        $('#history').text(h);
+                        $('#history-id').text(id);
+                        CreateMode.init();
+                    } else if (window.mode === 2) {
+                        console.log('recognize mode');
+                    } else if (window.mode === 3) {
+                        console.log('challenge mode');
+                    }
+                } else if (event.which === 3) { // right
+                    if (window.mode === 1) {
+                        let hid = $(this).find('div').text();
+                        console.log(hid);
+                        {% if request.user.is_authenticated %}
+                            $.ajax({
+                                url: {% url 'create' %},
+                                type: 'DELETE',
+                                data: {'history-id': hid},
+                                success: function () {
+                                    alert('Deleted.');
+                                    window.location = {% url 'create' %};
+                                }
+                            });
+                        {% else %}
+                            alert('Please sign in first.');
+                        {% endif %}
+                    }
+                }
+            });
         }
-    }
+    });
 </script>
 {% block script %}
 {% endblock %}

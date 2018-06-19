@@ -47,8 +47,14 @@ def create(request):
             creation = Creation.objects.get(pk=hid)
             creation.record = history
             creation.save()
-            # url = reverse('create')
-            # return HttpResponseRedirect(url)
+            return render(request, 'rhythm/create.html', status=200)
+        else:
+            return HttpResponse('Please sign in first.')
+    elif request.method == 'DELETE':
+        if request.user.is_authenticated:
+            delete = QueryDict(request.body)
+            hid = delete.get('history-id')
+            Creation.objects.get(pk=hid).delete()
             return render(request, 'rhythm/create.html', status=200)
         else:
             return HttpResponse('Please sign in first.')
@@ -76,7 +82,7 @@ def recognize(request):
                 name = fragment.upload.name.split('/')[-1]
                 name = '.'.join(name.split('.')[:-1])
                 datetime = str(fragment.created_at).split('.')[0]
-                records.append({'title': name, 'detail': datetime})
+                records.append({'id': fragment.id, 'title': name, 'detail': datetime})
             request.session['records'] = records
         return render(request, 'rhythm/recognize.html')
 
@@ -91,7 +97,7 @@ def challenge(request):
             for score in scores:
                 s = str(score.score)
                 datetime = str(score.created_at).split('.')[0]
-                records.append({'title': s, 'detail': datetime})
+                records.append({'id': score.id, 'title': s, 'detail': datetime})
             request.session['records'] = records
         return render(request, 'rhythm/challenge.html')
     elif request.method == 'POST':

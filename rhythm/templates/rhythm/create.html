@@ -39,19 +39,6 @@
 
 {% block script %}
     <script>
-        function csrfSafeMethod(method) {
-            // these HTTP methods do not require CSRF protection
-            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-        }
-
-        let csrftoken = $("[name=csrfmiddlewaretoken]").val();
-        $.ajaxSetup({
-            beforeSend: function (xhr, settings) {
-                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                }
-            }
-        });
         $('#save-btn').click(function () {
             {% if request.user.is_authenticated %}
                 $.ajax({
