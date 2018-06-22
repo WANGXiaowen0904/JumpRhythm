@@ -7,8 +7,8 @@ let Util = new function () {
 let CreateMode = new function () {
 
     const N_ROWS = 3;
-    const N_COLS = 7;
-    const N_CHORDS = N_COLS * N_ROWS;
+    const N_COLS = 9;
+    const N_CHORDS = (N_COLS - 2) * N_ROWS;
     const N_CHANNELS = Math.ceil(N_CHORDS / 2);
     const WORLD_RECT = {
         x: 0,
@@ -56,6 +56,12 @@ let CreateMode = new function () {
             }
             worldContext = worldCanvas.getContext('2d');
 
+            bullet = new Bullet();
+
+            resetCanvasAttr(worldCanvas);
+
+            updatePointsFromHash();
+
             if (!banded) {
                 // Mouse Events
                 $(document).mousemove(updateMouseCoordinate);
@@ -69,31 +75,27 @@ let CreateMode = new function () {
                 $('#pause-btn').click(pauseHandler);
                 // Other events
                 window.addEventListener('resize', resizeAllCanvas, false);
-                banded = true;
+                setInterval(loop, TIME_INTERVAL);
             }
-
-            bullet = new Bullet();
-
-            resetCanvasAttr(worldCanvas);
-
-            updatePointsFromHash();
-
-            setInterval(loop, TIME_INTERVAL);
         }
 
         if (helpCanvas && helpCanvas.getContext) {
             helpContext = helpCanvas.getContext('2d');
             resetCanvasAttr(helpCanvas);
-            $('#help-btn').click(function () {
-                needHelp = !needHelp;
-                if (needHelp) {
-                    drawHelp();
-                } else {
-                    helpContext.clearRect(0, 0, WORLD_RECT.width, WORLD_RECT.height);
-                }
-            });
+            if (!banded) {
+                $('#help-btn').click(function () {
+                    needHelp = !needHelp;
+                    if (needHelp) {
+                        drawHelp();
+                    } else {
+                        helpContext.clearRect(0, 0, WORLD_RECT.width, WORLD_RECT.height);
+                    }
+                });
+            }
             drawHelp();
         }
+
+        banded = true;
     };
 
     function drawPoints(event) {
@@ -217,8 +219,8 @@ let CreateMode = new function () {
     }
 
     function drawHelp() {
-        helpContext.lineWidth = 3;
-        helpContext.strokeStyle = "lightgrey";
+        helpContext.lineWidth = 1;
+        helpContext.strokeStyle = "rgba(0,0,0,0.6)";
         let dx = WORLD_RECT.width / N_COLS;
         let dy = WORLD_RECT.height / N_ROWS;
         for (let i = 1; i < N_ROWS; ++i) {
@@ -422,6 +424,11 @@ let CreateMode = new function () {
     }
 
     function playChord(index) {
+        if (index % N_COLS === 0 || (index + 1) % N_COLS === 0) {
+            return
+        }
+        let rows = Math.floor(index / N_COLS);
+        index -= 1 + rows * 2;
         audioChannels[0].pause();
         audioChannels[0].src = audioChords[index].src;
         audioChannels[0].load();

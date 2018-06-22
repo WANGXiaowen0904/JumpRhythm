@@ -22,33 +22,35 @@
     <nav class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation">
         <ul class="nav sidebar-nav">
             <li class="sidebar-brand">
-                <a href="#">
+                <a href="{% url 'home' %}" style="width: 240px;">
                     Jump Rhythm
                 </a>
             </li>
             <li class="sidebar-header">
                 {% if request.user.is_authenticated %}
-                    <div class="user-info">
-                        <div class="user-profile">{{ request.user.username }}</div>
-                        <div class="user-profile">{{ request.user.email }}</div>
+                    <div class="user-info user-sign">
+                        <a class="user-profile">{{ request.user.username }}</a>
+                        <span>|</span>
+                        <a class="user-profile">{{ request.user.email }}</a>
+                    </div>
+
                         <a href="{% url "sign_out" %}">
                             <span class="label label-danger">sign out</span>
                         </a>
-                    </div>
                 {% else %}
                     <div class="user-sign">
                         <a href="{% url "sign_in" %}">sign in</a>
+                        <span>|</span>
                         <a href="{% url "sign_up" %}">sign up</a>
                     </div>
                 {% endif %}
             </li>
-            <li>
-                <div class="btn-group mode" role="group" aria-label="...">
+            <li class="sidebar-btn">
+{#                <div class="btn-group mode" role="group" aria-label="...">#}
                     <button id="create-mode" type="button" class="btn btn-default">Create</button>
                     <button id="recognize-mode" type="button" class="btn btn-default">Recognize</button>
                     <button id="challenge-mode" type="button" class="btn btn-default">Challenge</button>
-                    <button id="challenge-mode" type="button" class="btn btn-default">Challenge</button>
-                </div>
+{#                </div>#}
             </li>
             <li>
                 <div class="list-group">
@@ -64,7 +66,7 @@
                     {% if request.session.records %}
                         {% for record in request.session.records %}
                             <div class="list-group-item overview">
-                                <h4 class="list-group-item-heading">{{ record.title }}</h4>
+                                <h5 class="list-group-item-heading">{{ record.title }}</h5>
                                 <p class="list-group-item-text">{{ record.detail }}</p>
                                 <div style="display: none;">{{ record.id }}</div>
                             </div>
@@ -72,6 +74,8 @@
                     {% endif %}
                 </div>
             </li>
+
+
         </ul>
     </nav>
     <!-- /#sidebar-wrapper -->
@@ -95,16 +99,30 @@
                         <h4 class="modal-title">JumpRhythm Tour Guide</h4>
                     </div>
                     <div class="modal-body">
-                        <p>Say something about the novel world...&hellip;</p>
+                        <p><strong>Create mode:</strong><br>
+                            Double click the canvas to add a colorful point, different tones will be played depending on
+                            where the points are placed.<br>
+                            Points can be dragged to a new place with mouse.<br>
+                            Dragging points outside the border to delete them.
+                        </p>
+                        <p><strong>Recognize mode:</strong><br>
+                            Upload a piece of music to see the music!
+                        </p>
+                        <p><strong>Challenge mode:</strong><br>
+                            Listen and recognize the tone played in background.<br>
+                            Add points to proper grid and confirm your answer!<br>
+                            The faster the tune played the higher score you'll gain.
+                        </p>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-primary">Next</button>
                     </div>
                 </div><!-- /.modal-content -->
             </div><!-- /.modal-dialog -->
         </div><!-- /.modal -->
-        <p>
+        <p style="
+      text-align: right;
+    margin: -39px 0;">
             <button data-toggle="modal" href="#guide" class="btn btn-primary btn-large">Help</button>
         </p>
         {% block container %}
@@ -184,34 +202,50 @@
         for (let i = 0; i < overviews.length; ++i) {
             $(overviews[i]).mousedown(function (event) {
                 if (event.which === 1) { // left
+                    let h = $(this).find('p').text();
+                    let id = $(this).find('div').text();
+                    $('#history').text(h);
+                    $('#history-id').text(id);
                     if (window.mode === 1) {
-                        let h = $(this).find('p').text();
-                        let id = $(this).find('div').text();
-                        $('#history').text(h);
-                        $('#history-id').text(id);
                         CreateMode.init();
-                    } else if (window.mode === 2) {
-                        console.log('recognize mode');
-                    } else if (window.mode === 3) {
+                    }
+                    else if (window.mode === 2) {
+                        $.ajax({
+                            url: {% url 'recognize' %},
+                            type: 'POST',
+                            data: {'history-id': id},
+                            success: function () {
+                                window.location = {% url 'recognize' %};
+                            }
+                        });
+                    }
+                    else if (window.mode === 3) {
                         console.log('challenge mode');
                     }
-                } else if (event.which === 3) { // right
+                }
+                else if (event.which === 3) { // right
+                    let hid = $(this).find('div').text();
                     if (window.mode === 1) {
-                        let hid = $(this).find('div').text();
-                        console.log(hid);
-                        {% if request.user.is_authenticated %}
-                            $.ajax({
-                                url: {% url 'create' %},
-                                type: 'DELETE',
-                                data: {'history-id': hid},
-                                success: function () {
-                                    alert('Deleted.');
-                                    window.location = {% url 'create' %};
-                                }
-                            });
-                        {% else %}
-                            alert('Please sign in first.');
-                        {% endif %}
+                        $.ajax({
+                            url: {% url 'create' %},
+                            type: 'DELETE',
+                            data: {'history-id': hid},
+                            success: function () {
+                                alert('Deleted.');
+                                window.location = {% url 'create' %};
+                            }
+                        });
+                    }
+                    else if (window.mode === 2) {
+                        {#$.ajax({#}
+                        {#    url: {% url 'recognize' %},#}
+                        {#    type: 'DELETE',#}
+                        {#    data: {'history-id': hid},#}
+                        {#    success: function () {#}
+                        {#        alert('Deleted.');#}
+                        {#        window.location = {% url 'recognize' %};#}
+                        {#    }#}
+                        {#\});#}
                     }
                 }
             });

@@ -7,14 +7,10 @@ body {
     overflow-x: hidden;
 }
 
-body, html {
-    background-color: #04151a;
-    height: 100%;
-}
 
-canvas {
-    border: 3px #153742 solid;
-}
+/*canvas {*/
+    /*border: 3px #153742 solid;*/
+/*}*/
 
 .message {
     font-size: 11px;
@@ -228,11 +224,15 @@ p.noCanvas {
     width: 100%;
 }
 
-.sidebar-nav li a {
+.sidebar-nav li a, .sidebar-nav li span {
     color: #dddddd;
     display: block;
-    padding: 10px 15px 10px;
+    padding: 14px 15px 10px;
     text-decoration: none;
+}
+.sidebar-nav li span {
+    padding: 10px 0px;
+    margin: 0 -20px;
 }
 
 .sidebar-nav li.open:hover before {
@@ -412,7 +412,7 @@ p.noCanvas {
 /*for nav items*/
 .user-sign {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-evenly;
 }
 
 .user-sign > a {
@@ -444,27 +444,125 @@ p.noCanvas {
 #under-canvas {
     position: absolute;
     top: 670px;
-    left: 340px;
+    /*left: 340px;*/
+    justify-content: center;
+    width: 100%;
 }
 
 #level {
     position: absolute;
-    top: 70px;
-    left: 500px;
+    top: 64px;
+    left: 550px;
     color: #ffffff;
 }
 
 #score {
     position: absolute;
-    top: 70px;
+    top: 64px;
     left: 800px;
     color: #ffffff;
 }
 
 #life {
     position: absolute;
-    top: 70px;
-    left: 660px;
+    top: 64px;
+    left: 685px;
     color: #ffffff;
 }
 
+body, html {
+    /*background-color: #04151a;*/
+    height: 100%;
+    background: linear-gradient(39deg, #0d1b1d, #1e5957);
+}
+
+.jumbotron {
+    text-align: center;
+    padding: 120px 0;
+    color: white;
+    margin-top: 100px;
+}
+
+.jumbotron, #help {
+
+    background: rgba(255,255,255, 0.1);
+
+    background: rgba(80,80,80, 0.2);
+    box-shadow: 2px 2px 40px -15px black;
+    border-radius: 6px;
+}
+
+.jumbotron h1 {
+    font-size: 40px;
+}
+.jumbotron p {
+    margin: 80px 0 40px;
+    font-size: 18px;
+}
+
+.btn {
+
+     background: transparent;
+    margin: -10px 10px 0;
+    box-shadow: 0px 0px 3px -1px white;
+    border-radius: 100px;
+    border-color: transparent;
+    color: rgba(255,255,255, 0.8);
+}
+
+.btn:hover {
+    background: #1e5957;
+    border-color: #1e5957;
+    color: rgba(255,255,255, 1);
+    box-shadow: 0px 0px 3px -1px transparent;
+}
+
+.jumbotron .btn:hover {
+      margin: 0px 25px;
+     transform: translateY(-2px);
+
+}
+
+.sidebar-nav .sidebar-btn {
+      display: inline-flex;
+    flex-direction: column;
+    height: 180px;
+    justify-content: space-evenly;
+     align-items: center;
+}
+.sidebar-nav .sidebar-btn .btn {
+    width: 180px;
+}
+
+.list-group-item {
+    background-color: rgba(80,80,80, 0.2);
+    width: 180px;
+    margin: auto;
+    border: 1px solid #ddd;
+    border-top-width: 0;
+    color: white;
+}
+
+#tip {
+    margin: 20px auto 0;
+    text-align: center;
+    border-top-width: 1px;
+}
+
+.modal-content {
+    background: rgba(80,80,80, 0.6);
+    color: #ffffffcc;
+}
+.modal-content .btn {
+    margin: 0;
+}
+
+.modal-body {
+    padding: 0 15px;
+}
+.modal-body p {
+    margin: 20px 0;
+}
+.modal-footer {
+    padding: 10px 15px;
+}

@@ -32,44 +32,72 @@
             <button id="update-btn" class="btn btn-primary" type="button">Update</button>
         </div>
         <div>
-            <button id="save-btn" class="btn btn-primary" type="button">Save</button>
+            <button class="btn btn-primary" data-toggle="modal" href="#enter-name">Save</button>
         </div>
     </div>
+    <div class="modal fade" id="enter-name">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" style="border: none">
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                    </button>
+                    <h4 class="modal-title"><strong>Please enter a name for your work:</strong></h4>
+                </div>
+                <div class="modal-body">
+                    <input type="text" class="form-control" id="work-name" autofocus="autofocus" placeholder="fuck me" style="background: transparent; margin: 20px 0;color: white;">
+                </div>
+                <div class="modal-footer" style="border: none">
+                    <button id="save-btn" type="button" class="btn btn-primary" data-dismiss="modal">save</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 {% endblock %}
 
 {% block script %}
     <script>
-        $('#save-btn').click(function () {
-            {% if request.user.is_authenticated %}
-                $.ajax({
-                    url: {% url 'create' %},
-                    type: 'POST',
-                    data: {'history': $('#history').html()},
-                    success: function () {
-                        alert('Your work has been saved!')
-                    }
-                });
-            {% else %}
-                alert('Please sign in first.');
-            {% endif %}
+        $(function () {
+            $('#save-btn').click(function () {
+                {% if request.user.is_authenticated %}
+                    let name = $('#work-name')[0].value;
+                    let history = $('#history').text();
+                    console.log(name);
+                    $.ajax({
+                        url: {% url 'create' %},
+                        type: 'POST',
+                        data: {
+                            'history': history,
+                            'name': name
+                        },
+                        success: function () {
+                            window.location = {% url 'create' %};
+                            $('#history').text(history);
+                            CreateMode.init();
+                        }
+                    });
+                {% else %}
+                    alert('Please sign in first.');
+                {% endif %}
+            });
+            $('#update-btn').click(function () {
+                {% if request.user.is_authenticated %}
+                    $.ajax({
+                        url: {% url 'create' %},
+                        type: 'PUT',
+                        data: {
+                            'history': $('#history').text(),
+                            'history-id': $('#history-id').text()
+                        },
+                        success: function () {
+                            alert('Your work has been updated!')
+                        }
+                    });
+                {% else %}
+                    alert('Please sign in first.');
+                {% endif %}
+            })
         });
-        $('#update-btn').click(function () {
-            {% if request.user.is_authenticated %}
-                $.ajax({
-                    url: {% url 'create' %},
-                    type: 'PUT',
-                    data: {
-                        'history': $('#history').text(),
-                        'history-id': $('#history-id').text()
-                    },
-                    success: function () {
-                        alert('Your work has been updated!')
-                    }
-                });
-            {% else %}
-                alert('Please sign in first.');
-            {% endif %}
-        })
     </script>
     <script src="{{ STATIC_URL }}js/create.js"></script>
 {% endblock %}

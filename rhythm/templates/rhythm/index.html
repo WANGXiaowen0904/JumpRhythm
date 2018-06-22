@@ -5,9 +5,11 @@
         <div class="jumbotron">
             <h1>Welcome to Jump Rhythm</h1>
             <p>choose a mode and get start!</p>
-            <p><a class="btn btn-primary btn-lg" href="{% url 'create' %}" role="button">Create mode</a></p>
-            <p><a class="btn btn-primary btn-lg" href="{% url 'recognize' %}" role="button">Recognize mode</a></p>
-            <p><a class="btn btn-primary btn-lg" href="{% url 'challenge' %}" role="button">Challenge mode</a></p>
+            <div>
+                <a class="btn btn-primary btn-lg" href="{% url 'create' %}" role="button">Create mode</a>
+                <a class="btn btn-primary btn-lg" href="{% url 'recognize' %}" role="button">Recognize mode</a>
+                <a class="btn btn-primary btn-lg" href="{% url 'challenge' %}" role="button">Challenge mode</a>
+            </div>
         </div>
     </div>
 {% endblock %}

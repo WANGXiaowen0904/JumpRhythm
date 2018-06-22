@@ -260,8 +260,8 @@ let ChallengeMode = new function () {
     }
 
     function drawHelp() {
-        helpContext.lineWidth = 3;
-        helpContext.strokeStyle = "lightgrey";
+        helpContext.lineWidth = 1;
+        helpContext.strokeStyle = "rgba(0,0,0,0.6)";
         let dx = WORLD_RECT.width / N_COLS;
         let dy = WORLD_RECT.height / N_ROWS;
         for (let i = 1; i < N_ROWS; ++i) {

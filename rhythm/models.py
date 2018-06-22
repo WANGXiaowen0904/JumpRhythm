@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 # Create your models here.
 class Creation(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=255, default='test')
+    name = models.CharField(max_length=255, default='my work')
     record = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     last_edited_at = models.DateTimeField(auto_now=True)

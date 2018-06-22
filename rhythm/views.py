@@ -33,7 +33,8 @@ def create(request):
     elif request.method == 'POST':
         if request.user.is_authenticated:
             history = request.POST.get('history')
-            creation = Creation(user=request.user, record=history)
+            name = request.POST.get('name')
+            creation = Creation(user=request.user, name=name, record=history)
             creation.save()
             url = reverse('create')
             return HttpResponseRedirect(url)
@@ -62,16 +63,18 @@ def create(request):
 
 def recognize(request):
     if request.method == 'POST':
-        audio = request.FILES['audio']
-        if request.user.is_authenticated:
+        if 'audio' in request.FILES:
+            audio = request.FILES['audio']
             fragment = Fragment(user=request.user, upload=audio)
             fragment.save()
-            src = '/media/' + fragment.upload.__str__()
-            request.session['src'] = src
-            url = reverse('recognize')
-            return HttpResponseRedirect(url)
         else:
-            return HttpResponse('Please sign in first')  # todo: require sign in
+            hid = request.POST.get('history-id')
+            fragment = Fragment.objects.get(pk=hid)
+        src = '/media/' + fragment.upload.__str__()
+        print(src)
+        request.session['src'] = src
+        url = reverse('recognize')
+        return HttpResponseRedirect(url)
     elif request.method == 'GET':
         if request.user.is_authenticated:
             tip = 'Recognition History'
