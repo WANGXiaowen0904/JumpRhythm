@@ -45,14 +45,15 @@
                     <h4 class="modal-title"><strong>Please enter a name for your work:</strong></h4>
                 </div>
                 <div class="modal-body">
-                    <input type="text" class="form-control" id="work-name" autofocus="autofocus" placeholder="fuck me" style="background: transparent; margin: 20px 0;color: white;">
+                    <input type="text" class="form-control" id="work-name" autofocus="autofocus" placeholder="name"
+                           style="background: transparent; margin: 20px 0;color: white;">
                 </div>
                 <div class="modal-footer" style="border: none">
                     <button id="save-btn" type="button" class="btn btn-primary" data-dismiss="modal">save</button>
                 </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block script %}
@@ -82,6 +83,7 @@
             });
             $('#update-btn').click(function () {
                 {% if request.user.is_authenticated %}
+                    let history = $('#history').text();
                     $.ajax({
                         url: {% url 'create' %},
                         type: 'PUT',
@@ -91,6 +93,9 @@
                         },
                         success: function () {
                             alert('Your work has been updated!')
+                            window.location = {% url 'create' %};
+                            $('#history').text(history);
+                            CreateMode.init();
                         }
                     });
                 {% else %}

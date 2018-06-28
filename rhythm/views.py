@@ -27,7 +27,8 @@ def create(request):
             creations = Creation.objects.filter(user_id=request.user.id).order_by('-last_edited_at')
             records = []
             for creation in creations:
-                records.append({'id': creation.id, 'title': creation.name, 'detail': creation.record})
+                datetime = str(creation.created_at).split('.')[0]
+                records.append({'id': creation.id, 'title': creation.name, 'detail': datetime, 'hash': creation.record})
             request.session['records'] = records
         return render(request, 'rhythm/create.html')
     elif request.method == 'POST':
@@ -88,6 +89,16 @@ def recognize(request):
                 records.append({'id': fragment.id, 'title': name, 'detail': datetime})
             request.session['records'] = records
         return render(request, 'rhythm/recognize.html')
+    elif request.method == 'DELETE':
+        if request.user.is_authenticated:
+            delete = QueryDict(request.body)
+            hid = delete.get('history-id')
+            fragment = Fragment.objects.get(pk=hid)
+            fragment.upload.delete(save=True)
+            fragment.delete()
+            return render(request, 'rhythm/recognize.html', status=200)
+        else:
+            return HttpResponse('Please sign in first.')
 
 
 def challenge(request):
@@ -95,7 +106,7 @@ def challenge(request):
         if request.user.is_authenticated:
             tip = 'High Score'
             request.session['tip'] = tip
-            scores = Score.objects.filter(user=request.user).order_by('-score')
+            scores = Score.objects.filter(user=request.user).order_by('-score')[:3]
             records = []
             for score in scores:
                 s = str(score.score)

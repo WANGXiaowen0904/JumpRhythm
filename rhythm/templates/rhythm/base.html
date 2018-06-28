@@ -34,9 +34,9 @@
                         <a class="user-profile">{{ request.user.email }}</a>
                     </div>
 
-                        <a href="{% url "sign_out" %}">
-                            <span class="label label-danger">sign out</span>
-                        </a>
+                    <a href="{% url "sign_out" %}">
+                        <span class="label label-danger">sign out</span>
+                    </a>
                 {% else %}
                     <div class="user-sign">
                         <a href="{% url "sign_in" %}">sign in</a>
@@ -46,11 +46,11 @@
                 {% endif %}
             </li>
             <li class="sidebar-btn">
-{#                <div class="btn-group mode" role="group" aria-label="...">#}
-                    <button id="create-mode" type="button" class="btn btn-default">Create</button>
-                    <button id="recognize-mode" type="button" class="btn btn-default">Recognize</button>
-                    <button id="challenge-mode" type="button" class="btn btn-default">Challenge</button>
-{#                </div>#}
+                {#                <div class="btn-group mode" role="group" aria-label="...">#}
+                <button id="create-mode" type="button" class="btn btn-default">Create</button>
+                <button id="recognize-mode" type="button" class="btn btn-default">Recognize</button>
+                <button id="challenge-mode" type="button" class="btn btn-default">Challenge</button>
+                {#                </div>#}
             </li>
             <li>
                 <div class="list-group">
@@ -69,6 +69,10 @@
                                 <h5 class="list-group-item-heading">{{ record.title }}</h5>
                                 <p class="list-group-item-text">{{ record.detail }}</p>
                                 <div style="display: none;">{{ record.id }}</div>
+                                {% if record.hash %}
+                                    <span style="display: none;">{{ record.hash }}
+                                    </span>
+                                {% endif %}
                             </div>
                         {% endfor %}
                     {% endif %}
@@ -103,7 +107,11 @@
                             Double click the canvas to add a colorful point, different tones will be played depending on
                             where the points are placed.<br>
                             Points can be dragged to a new place with mouse.<br>
-                            Dragging points outside the border to delete them.
+                            Dragging points outside the border to delete them.<br>
+                            The <strong>MAP(grid->tune)</strong> is:<br>
+                            'empty C3 D3 E3 F3 G3 A3 B3 empty'<br>
+                            'empty C4 D4 E4 F4 G4 A4 B4 empty'<br>
+                            'empty C5 D5 E5 F5 G5 A5 B5 empty'
                         </p>
                         <p><strong>Recognize mode:</strong><br>
                             Upload a piece of music to see the music!
@@ -111,7 +119,11 @@
                         <p><strong>Challenge mode:</strong><br>
                             Listen and recognize the tone played in background.<br>
                             Add points to proper grid and confirm your answer!<br>
-                            The faster the tune played the higher score you'll gain.
+                            The faster the tune played the higher score you'll gain.<br>
+                            The <strong>MAP(grid->tune)</strong> is:<br>
+                            'C3 D3 E3 F3 G3 A3 B3'<br>
+                            'C4 D4 E4 F4 G4 A4 B4'<br>
+                            'C5 D5 E5 F5 G5 A5 B5'
                         </p>
                     </div>
                     <div class="modal-footer">
@@ -119,7 +131,24 @@
                     </div>
                 </div><!-- /.modal-content -->
             </div><!-- /.modal-dialog -->
-        </div><!-- /.modal -->
+        </div>
+        <div class="modal fade" id="confirm-delete">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header" style="border: none">
+                        <button type="button" class="close" data-dismiss="modal">
+                            <span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+                        </button>
+                        <h4 class="modal-title"><strong>Are you sure you want to delete the history?</strong></h4>
+                    </div>
+                    <div class="modal-footer" style="border: none">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">cancel</button>
+                        <button id="delete-btn" type="button" class="btn btn-primary" data-dismiss="modal">delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <p style="
       text-align: right;
     margin: -39px 0;">
@@ -198,11 +227,39 @@
             window.location = {% url 'challenge' %};
         });
 
+        $('#delete-btn').click(function () {
+            let url;
+            let hid = $('#history-id').text();
+            if (window.mode === 1) {
+                url = {% url 'create' %};
+                $.ajax({
+                    url: url,
+                    type: 'DELETE',
+                    data: {'history-id': hid},
+                    success: function () {
+                        alert('Deleted.');
+                        window.location = url;
+                    }
+                });
+            } else if (window.mode === 2) {
+                url = {%  url 'recognize' %};
+                $.ajax({
+                    url: url,
+                    type: 'DELETE',
+                    data: {'history-id': hid},
+                    success: function () {
+                        alert('Deleted.');
+                        window.location = url;
+                    }
+                });
+            }
+        });
+
         let overviews = $('.overview');
         for (let i = 0; i < overviews.length; ++i) {
             $(overviews[i]).mousedown(function (event) {
                 if (event.which === 1) { // left
-                    let h = $(this).find('p').text();
+                    let h = $(this).find('span').text();
                     let id = $(this).find('div').text();
                     $('#history').text(h);
                     $('#history-id').text(id);
@@ -224,29 +281,9 @@
                     }
                 }
                 else if (event.which === 3) { // right
-                    let hid = $(this).find('div').text();
-                    if (window.mode === 1) {
-                        $.ajax({
-                            url: {% url 'create' %},
-                            type: 'DELETE',
-                            data: {'history-id': hid},
-                            success: function () {
-                                alert('Deleted.');
-                                window.location = {% url 'create' %};
-                            }
-                        });
-                    }
-                    else if (window.mode === 2) {
-                        {#$.ajax({#}
-                        {#    url: {% url 'recognize' %},#}
-                        {#    type: 'DELETE',#}
-                        {#    data: {'history-id': hid},#}
-                        {#    success: function () {#}
-                        {#        alert('Deleted.');#}
-                        {#        window.location = {% url 'recognize' %};#}
-                        {#    }#}
-                        {#\});#}
-                    }
+                    let id = $(this).find('div').text();
+                    $('#history-id').text(id);
+                    $('#confirm-delete').modal('show')
                 }
             });
         }
